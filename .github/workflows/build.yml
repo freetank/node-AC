@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         os-type: [ windows-2022, macos-13 ]
-        ac-version: [ 25, 26, 27 ]
+        ac-version: [ 27 ]
 
     steps:
       - uses: actions/checkout@v3
@@ -36,3 +36,9 @@ jobs:
       - name: Run build script
         run: |
           python Tools/BuildAddOn.py --configFile config.json --acVersion ${{ matrix.ac-version }}
+
+      - name: Archive build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: "${{ matrix.config.name }} build artifacts"
+          path: build/bin/
