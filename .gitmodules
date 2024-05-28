@@ -1,3 +1,7 @@
-[submodule "Tools"]
+[submodule "VisualScriptEngine"]
+	path = VisualScriptEngine
+	url = git@github.com:kovacsv/VisualScriptEngine.git
+
+[submodule "archicad-addon-cmake-tools"]
 	path = Tools
-	url = https://github.com/GRAPHISOFT/archicad-addon-cmake-tools.git
+	url = git@github.com:GRAPHISOFT/archicad-addon-cmake-tools.git
