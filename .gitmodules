@@ -1,7 +1,7 @@
 [submodule "VisualScriptEngine"]
 	path = VisualScriptEngine
-	url = git@github.com:kovacsv/VisualScriptEngine.git
+	url = https://github.com/kovacsv/VisualScriptEngine
 
 [submodule "archicad-addon-cmake-tools"]
 	path = Tools
-	url = git@github.com:GRAPHISOFT/archicad-addon-cmake-tools.git
+	url = https://github.com/GRAPHISOFT/archicad-addon-cmake-tools
