@@ -13,6 +13,7 @@ jobs:
 
     strategy:
       matrix:
+        name: [ "Node AC" ]
         os-type: [ windows-2022, macos-13 ]
         ac-version: [ 27 ]
 
@@ -40,5 +41,5 @@ jobs:
       - name: Archive build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: "${{ matrix.config.name }} build artifacts"
-          path: build/bin/
+          name: "${{ matrix.name }}_${{ matrix.os-type }}_${{ github.run_number }}"
+          path: Build/ExampleAddOn/27/INT/RelWithDebInfo
