@@ -18,15 +18,15 @@ jobs:
         ac-version: [ 27 ]
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Checkout the submodule
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: 3.8
 
@@ -39,7 +39,7 @@ jobs:
           python Tools/BuildAddOn.py --configFile config.json --acVersion ${{ matrix.ac-version }}
 
       - name: Archive build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: "${{ matrix.name }}_${{ matrix.os-type }}_${{ github.run_number }}"
-          path: Build/ExampleAddOn/27/INT/RelWithDebInfo
+          path: Build/Node-AC/27/INT/RelWithDebInfo
