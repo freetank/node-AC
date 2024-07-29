@@ -1,5 +1,10 @@
 {
+  "private": true,
+  "scripts": {
+    "build": "webpack"
+  },
   "dependencies": {
+    "html-webpack-plugin": "^5.6.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "rete": "^2.0.3",
@@ -8,5 +13,12 @@
     "rete-react-plugin": "^2.0.5",
     "rete-render-utils": "^2.0.2",
     "styled-components": "^6.1.12"
+  },
+  "devDependencies": {
+    "@types/react-dom": "^18.3.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "^5.5.4",
+    "webpack": "^5.93.0",
+    "webpack-cli": "^5.1.4"
   }
 }
