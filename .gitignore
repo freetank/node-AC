@@ -4,4 +4,4 @@ Build/*
 out/*
 CMakeUserPresets.json
 APIDevKit-*/
-Retejs/*
+node_modules/*
