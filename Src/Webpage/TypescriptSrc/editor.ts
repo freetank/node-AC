@@ -60,7 +60,8 @@ export async function createEditor(container: HTMLElement) {
   };
 }
 
-document.addEventListener("DOMContentLoaded", (event) => {
+window.addEventListener("load", (event) => {
+  console.log("fdsfsd");
   const container = document.getElementById("container")!;
   createEditor (container);
 });
