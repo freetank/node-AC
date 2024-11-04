@@ -15,7 +15,7 @@ jobs:
       matrix:
         name: [ "Node AC" ]
         os-type: [ windows-2022, macos-13 ]
-        ac-version: [ 27 ]
+        ac-version: [ 27, 28 ]
 
     steps:
       - uses: actions/checkout@v4
