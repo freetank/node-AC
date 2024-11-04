@@ -3,39 +3,36 @@
 
 #include "ResourceIds.hpp"
 #include "DGModule.hpp"
+#include "DGBrowser.hpp"
 
-static const GSResID AddOnInfoID			= ID_ADDON_INFO;
-	static const Int32 AddOnNameID			= 1;
-	static const Int32 AddOnDescriptionID	= 2;
+static const GSResID AddOnInfoID = ID_ADDON_INFO;
+static const Int32 AddOnNameID = 1;
+static const Int32 AddOnDescriptionID = 2;
 
-static const short AddOnMenuID				= ID_ADDON_MENU;
-	static const Int32 AddOnCommandID		= 1;
+static const short AddOnMenuID = ID_ADDON_MENU;
+static const Int32 AddOnCommandID = 1;
 
-class ExampleDialog :	public DG::ModalDialog,
-						public DG::PanelObserver,
-						public DG::ButtonItemObserver,
-						public DG::CompoundItemObserver
+class NodeDialog :	public DG::ModalDialog,
+					public DG::PanelObserver,
+					public DG::CompoundItemObserver
 {
 public:
 	enum DialogResourceIds
 	{
 		ExampleDialogResourceId = ID_ADDON_DLG,
-		OKButtonId = 1,
-		CancelButtonId = 2,
-		SeparatorId = 3
+		BrowserId = 1
 	};
 
-	ExampleDialog () :
+	NodeDialog () :
 		DG::ModalDialog (ACAPI_GetOwnResModule (), ExampleDialogResourceId, ACAPI_GetOwnResModule ()),
-		okButton (GetReference (), OKButtonId),
-		cancelButton (GetReference (), CancelButtonId),
-		separator (GetReference (), SeparatorId)
+		browser (GetReference (), BrowserId)
 	{
 		AttachToAllItems (*this);
 		Attach (*this);
+		browser.LoadURL (u"file:///C:/Users/mpalenik/Repos/node-AC/build/dist/index.html"sv);
 	}
 
-	~ExampleDialog ()
+	~NodeDialog ()
 	{
 		Detach (*this);
 		DetachFromAllItems (*this);
@@ -45,24 +42,11 @@ private:
 	virtual void PanelResized (const DG::PanelResizeEvent& ev) override
 	{
 		BeginMoveResizeItems ();
-		okButton.Move (ev.GetHorizontalChange (), ev.GetVerticalChange ());
-		cancelButton.Move (ev.GetHorizontalChange (), ev.GetVerticalChange ());
-		separator.MoveAndResize (0, ev.GetVerticalChange (), ev.GetHorizontalChange (), 0);
+		browser.Resize (ev.GetHorizontalChange (), ev.GetVerticalChange ());
 		EndMoveResizeItems ();
 	}
 
-	virtual void ButtonClicked (const DG::ButtonClickEvent& ev) override
-	{
-		if (ev.GetSource () == &okButton) {
-			PostCloseRequest (DG::ModalDialog::Accept);
-		} else if (ev.GetSource () == &cancelButton) {
-			PostCloseRequest (DG::ModalDialog::Cancel);
-		}
-	}
-
-	DG::Button		okButton;
-	DG::Button		cancelButton;
-	DG::Separator	separator;
+	DG::Browser browser;
 };
 
 static GSErrCode MenuCommandHandler (const API_MenuParams *menuParams)
@@ -72,7 +56,7 @@ static GSErrCode MenuCommandHandler (const API_MenuParams *menuParams)
 			switch (menuParams->menuItemRef.itemIndex) {
 				case AddOnCommandID:
 					{
-						ExampleDialog dialog;
+						NodeDialog dialog;
 						dialog.Invoke ();
 					}
 					break;
@@ -90,25 +74,17 @@ API_AddonType CheckEnvironment (API_EnvirParams* envir)
 	return APIAddon_Normal;
 }
 
-GSErrCode RegisterInterface (void)
+GSErrCode RegisterInterface ()
 {
-#ifdef ServerMainVers_2700
 	return ACAPI_MenuItem_RegisterMenu (AddOnMenuID, 0, MenuCode_Tools, MenuFlag_Default);
-#else
-	return ACAPI_Register_Menu (AddOnMenuID, 0, MenuCode_Tools, MenuFlag_Default);
-#endif
 }
 
-GSErrCode Initialize (void)
+GSErrCode Initialize ()
 {
-#ifdef ServerMainVers_2700
 	return ACAPI_MenuItem_InstallMenuHandler (AddOnMenuID, MenuCommandHandler);
-#else
-	return ACAPI_Install_MenuHandler (AddOnMenuID, MenuCommandHandler);
-#endif
 }
 
-GSErrCode FreeData (void)
+GSErrCode FreeData ()
 {
 	return NoError;
 }
