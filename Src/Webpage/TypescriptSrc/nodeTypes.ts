@@ -6,6 +6,7 @@ type NodeData = { [key in string]: ClassicPreset.Socket; }
 type NodeControls = {
   [key in string]:
     | DropDownControl
+    | ClassicPreset.Control
     | ClassicPreset.InputControl<"number">
     | ClassicPreset.InputControl<"text">
     | undefined;
