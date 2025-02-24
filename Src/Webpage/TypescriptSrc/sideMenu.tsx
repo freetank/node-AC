@@ -39,7 +39,7 @@ const SideMenu: React.FC = () => {
           <Menu.Item key="12">option12</Menu.Item>
         </SubMenu>
       </Menu>
-      <div style={{ position: 'absolute', bottom: 0, width: '100%', padding: '10px' }}>
+      <div className="fixed-bottom">
         <Button type="primary" block>Click Me</Button>
       </div>
     </Sider>
@@ -52,7 +52,7 @@ export function addSideMenu (container: HTMLElement) {
     <SideMenu />
     <Layout>
     <Content>
-      <div id="editor-container" style={{ height: '100%' }}></div>
+      <div className="full-height" id="editor-container"></div>
     </Content>
     </Layout>
   </Layout>
