@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Button } from 'antd';
 import {
   UserOutlined,
   LaptopOutlined,
@@ -39,6 +39,9 @@ const SideMenu: React.FC = () => {
           <Menu.Item key="12">option12</Menu.Item>
         </SubMenu>
       </Menu>
+      <div style={{ position: 'absolute', bottom: 0, width: '100%', padding: '10px' }}>
+        <Button type="primary" block>Click Me</Button>
+      </div>
     </Sider>
   );
 };
