@@ -10,6 +10,7 @@ import { Node, Schemes, AreaExtra } from "./nodeTypes";
 import { DropDownControl } from "./dropdownControl";
 import { CustomDropDown } from "./dropdownControlUI";
 import { CatchNewElementInfo, ACConnection } from "./ACObjectTypes";
+import { addSideMenu } from "./sideMenu";
 
 declare var DG: any;
 declare var catchNewElementInfo: CatchNewElementInfo;
@@ -68,7 +69,20 @@ async function createEditor(container: HTMLElement) {
 
 window.addEventListener("load", (event) => {
   const container = document.getElementById("container")!;
-  createEditor (container);
+  const observer = new MutationObserver((mutationsList, observer) => {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        const editorContainer = document.getElementById("editor-container");
+        if (editorContainer) {
+          createEditor(editorContainer);
+          observer.disconnect();
+        }
+      }
+    }
+  });
+
+  observer.observe(container, { childList: true, subtree: true });
+  addSideMenu(container);
 });
 
 async function createDummyExample(editor: NodeEditor<Schemes>, area: AreaPlugin<Schemes, AreaExtra>) {
