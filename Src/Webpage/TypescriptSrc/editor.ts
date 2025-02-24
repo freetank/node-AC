@@ -51,7 +51,7 @@ async function createEditor(container: HTMLElement) {
 
   AreaExtensions.simpleNodesOrder(area);
 
-  if (typeof acConnection !== "undefined") {
+  if (typeof acConnection === "undefined") {
     await DG.LoadObject("acConnection");
   }
   acConnection.editorCreated();
