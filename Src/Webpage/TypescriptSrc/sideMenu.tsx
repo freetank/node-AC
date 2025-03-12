@@ -22,7 +22,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ handleClick }) => {
         mode="inline"
         defaultSelectedKeys={['1']}
         defaultOpenKeys={['sub1']}
-        style={{ height: '100%', borderRight: 0 }}// TODO move to index.css
+        className="side-menu"
       >
         <SubMenu key="sub1" icon={<UserOutlined />} title="subnav 1">
           <Menu.Item key="1">option1</Menu.Item>
@@ -52,8 +52,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ handleClick }) => {
 
 export function addSideMenu (container: HTMLElement, handleClick: (() => void)) {
   createRoot(container).render(
-    // TODO move to index.css
-  <Layout style={{ height: '100vh' }}>
+  <Layout className="layout-full-height">
     <SideMenu handleClick={handleClick}/>
     <Layout>
     <Content>
