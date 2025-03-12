@@ -11,14 +11,18 @@ import { Content } from 'antd/es/layout/layout';
 const { Sider } = Layout;
 const { SubMenu } = Menu;
 
-const SideMenu: React.FC = () => {
+interface SideMenuProps {
+  handleClick: () => void;
+}
+
+const SideMenu: React.FC<SideMenuProps> = ({ handleClick }) => {
   return (
     <Sider width={200} className="site-layout-background">
       <Menu
         mode="inline"
         defaultSelectedKeys={['1']}
         defaultOpenKeys={['sub1']}
-        style={{ height: '100%', borderRight: 0 }}
+        style={{ height: '100%', borderRight: 0 }}// TODO move to index.css
       >
         <SubMenu key="sub1" icon={<UserOutlined />} title="subnav 1">
           <Menu.Item key="1">option1</Menu.Item>
@@ -40,16 +44,17 @@ const SideMenu: React.FC = () => {
         </SubMenu>
       </Menu>
       <div className="fixed-bottom">
-        <Button type="primary" block>Click Me</Button>
+        <Button type="primary" block onClick={handleClick}>Run</Button>
       </div>
     </Sider>
   );
 };
 
-export function addSideMenu (container: HTMLElement) {
+export function addSideMenu (container: HTMLElement, handleClick: (() => void)) {
   createRoot(container).render(
+    // TODO move to index.css
   <Layout style={{ height: '100vh' }}>
-    <SideMenu />
+    <SideMenu handleClick={handleClick}/>
     <Layout>
     <Content>
       <div className="full-height" id="editor-container"></div>

@@ -82,20 +82,22 @@ window.addEventListener("load", (event) => {
   });
 
   observer.observe(container, { childList: true, subtree: true });
-  addSideMenu(container);
+  addSideMenu(container, () => {});
 });
+
+//TODO: In case of click on the button, start to process the nodes
 
 async function createDummyExample(editor: NodeEditor<Schemes>, area: AreaPlugin<Schemes, AreaExtra>) {
   const socket = new ClassicPreset.Socket("socket");
-  const a = new Node("A");
-  a.addControl("a", new ClassicPreset.InputControl("text", { initial: "a" }));
-  a.addOutput("a", new ClassicPreset.Output(socket));
-  await editor.addNode(a);
+  // const a = new Node("A");
+  // a.addControl("a", new ClassicPreset.InputControl("text", { initial: "a" }));
+  // a.addOutput("a", new ClassicPreset.Output(socket));
+  // await editor.addNode(a);
 
-  const b = new Node("B");
-  b.addControl("b", new ClassicPreset.InputControl("text", { initial: "b" }));
-  b.addInput("b", new ClassicPreset.Input(socket));
-  await editor.addNode(b);
+  // const b = new Node("B");
+  // b.addControl("b", new ClassicPreset.InputControl("text", { initial: "b" }));
+  // b.addInput("b", new ClassicPreset.Input(socket));
+  // await editor.addNode(b);
 
   if (typeof catchNewElementInfo === "undefined") {
     await DG.LoadObject("catchNewElementInfo");
@@ -105,8 +107,8 @@ async function createDummyExample(editor: NodeEditor<Schemes>, area: AreaPlugin<
   dropdown.addOutput("dropdown", new ClassicPreset.Output(socket));
   await editor.addNode(dropdown);
 
-  await editor.addConnection(new ClassicPreset.Connection(a, "a", b, "b"));
+  // await editor.addConnection(new ClassicPreset.Connection(a, "a", b, "b"));
 
-  await area.translate(a.id, { x: 0, y: 0 });
-  await area.translate(b.id, { x: 270, y: 0 });
+  // await area.translate(a.id, { x: 0, y: 0 });
+  // await area.translate(b.id, { x: 270, y: 0 });
 }
