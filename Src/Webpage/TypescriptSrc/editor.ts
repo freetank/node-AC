@@ -6,11 +6,23 @@ import {
   Presets as ConnectionPresets,
 } from "rete-connection-plugin";
 import { ReactPlugin, Presets } from "rete-react-plugin";
-import { Node, Schemes, AreaExtra } from "./nodeTypes";
+import { Schemes, AreaExtra } from "./nodeTypes";
+import { DockPlugin, DockPresets } from "rete-dock-plugin";
 import { DropDownControl } from "./dropdownControl";
 import { CustomDropDown } from "./dropdownControlUI";
 import { CatchNewElementInfo, ACConnection } from "./ACObjectTypes";
 import { addSideMenu } from "./sideMenu";
+
+class CatchNewElementNode extends ClassicPreset.Node {
+  constructor(socket: ClassicPreset.Socket, itemsJSON: string) {
+    super("Event: Catch new element");
+
+    this.addControl("dropdown", new DropDownControl(itemsJSON));
+    this.addOutput("dropdown", new ClassicPreset.Output(socket));
+
+    return this;
+  }
+}
 
 declare var DG: any;
 declare var catchNewElementInfo: CatchNewElementInfo;
@@ -22,6 +34,9 @@ async function createEditor(container: HTMLElement) {
   createRoot (container);
   const connection = new ConnectionPlugin<Schemes, AreaExtra>();
   const render = new ReactPlugin<Schemes, AreaExtra>({ createRoot });
+  const dock = new DockPlugin<Schemes>();
+
+  dock.addPreset(DockPresets.classic.setup({ area, size: 100, scale: 0.6 }));
 
   AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
     accumulating: AreaExtensions.accumulateOnCtrl(),
@@ -48,6 +63,7 @@ async function createEditor(container: HTMLElement) {
   editor.use(area);
   area.use(connection);
   area.use(render);
+  area.use(dock);
 
   AreaExtensions.simpleNodesOrder(area);
 
@@ -56,7 +72,13 @@ async function createEditor(container: HTMLElement) {
   }
   acConnection.editorCreated();
 
-  createDummyExample(editor, area);
+  const socket = new ClassicPreset.Socket("socket");
+
+  if (typeof catchNewElementInfo === "undefined") {
+    await DG.LoadObject("catchNewElementInfo");
+  }
+  const elementTypes: string = await catchNewElementInfo.getElementTypes();
+  dock.add (() => new CatchNewElementNode(socket, elementTypes));
 
   setTimeout(() => {
     // wait until nodes rendered because they dont have predefined width and height
@@ -68,47 +90,24 @@ async function createEditor(container: HTMLElement) {
 }
 
 window.addEventListener("load", (event) => {
-  const container = document.getElementById("container")!;
-  const observer = new MutationObserver((mutationsList, observer) => {
-    for (const mutation of mutationsList) {
-      if (mutation.type === 'childList') {
-        const editorContainer = document.getElementById("editor-container");
-        if (editorContainer) {
-          createEditor(editorContainer);
-          observer.disconnect();
-        }
-      }
-    }
-  });
-
-  observer.observe(container, { childList: true, subtree: true });
-  addSideMenu(container, () => {});
-});
-
-//TODO: In case of click on the button, start to process the nodes
-
-async function createDummyExample(editor: NodeEditor<Schemes>, area: AreaPlugin<Schemes, AreaExtra>) {
-  const socket = new ClassicPreset.Socket("socket");
-  // const a = new Node("A");
-  // a.addControl("a", new ClassicPreset.InputControl("text", { initial: "a" }));
-  // a.addOutput("a", new ClassicPreset.Output(socket));
-  // await editor.addNode(a);
-
-  // const b = new Node("B");
-  // b.addControl("b", new ClassicPreset.InputControl("text", { initial: "b" }));
-  // b.addInput("b", new ClassicPreset.Input(socket));
-  // await editor.addNode(b);
-
-  if (typeof catchNewElementInfo === "undefined") {
-    await DG.LoadObject("catchNewElementInfo");
+  const editorContainer = document.getElementById("container");
+  if (editorContainer) {
+    console.log("Creating editor");
+    createEditor(editorContainer);
   }
-  const dropdown = new Node("Event: Catch new element");
-  dropdown.addControl("dropdown", new DropDownControl(await catchNewElementInfo.getElementTypes()));
-  dropdown.addOutput("dropdown", new ClassicPreset.Output(socket));
-  await editor.addNode(dropdown);
+  // const container = document.getElementById("container")!;
+  // const observer = new MutationObserver((mutationsList, observer) => {
+  //   for (const mutation of mutationsList) {
+  //     if (mutation.type === 'childList') {
+  //       const editorContainer = document.getElementById("editor-container");
+  //       if (editorContainer) {
+  //         createEditor(editorContainer);
+  //         observer.disconnect();
+  //       }
+  //     }
+  //   }
+  // });
 
-  // await editor.addConnection(new ClassicPreset.Connection(a, "a", b, "b"));
-
-  // await area.translate(a.id, { x: 0, y: 0 });
-  // await area.translate(b.id, { x: 270, y: 0 });
-}
+  // observer.observe(container, { childList: true, subtree: true });
+  // addSideMenu(container, () => {});
+});
