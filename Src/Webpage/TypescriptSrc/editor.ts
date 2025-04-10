@@ -6,23 +6,13 @@ import {
   Presets as ConnectionPresets,
 } from "rete-connection-plugin";
 import { ReactPlugin, Presets } from "rete-react-plugin";
-import { Schemes, AreaExtra } from "./nodeTypes";
+import { Schemes, AreaExtra } from "./nodes/nodeTypes";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
 import { DropDownControl } from "./dropdownControl";
 import { CustomDropDown } from "./dropdownControlUI";
 import { CatchNewElementInfo, ACConnection } from "./ACObjectTypes";
+import { CatchNewElementNode } from "./nodes/catchNewElementNode";
 import { addSideMenu } from "./sideMenu";
-
-class CatchNewElementNode extends ClassicPreset.Node {
-  constructor(socket: ClassicPreset.Socket, itemsJSON: string) {
-    super("Event: Catch new element");
-
-    this.addControl("dropdown", new DropDownControl(itemsJSON));
-    this.addOutput("dropdown", new ClassicPreset.Output(socket));
-
-    return this;
-  }
-}
 
 declare var DG: any;
 declare var catchNewElementInfo: CatchNewElementInfo;

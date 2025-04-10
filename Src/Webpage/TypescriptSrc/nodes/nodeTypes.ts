@@ -1,6 +1,6 @@
 import { GetSchemes, ClassicPreset } from "rete";
 import { ReactArea2D } from "rete-react-plugin";
-import { DropDownControl } from "./dropdownControl";
+import { DropDownControl } from "../dropdownControl";
 
 type NodeData = { [key in string]: ClassicPreset.Socket; }
 type NodeControls = {
