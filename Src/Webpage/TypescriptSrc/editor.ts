@@ -11,7 +11,9 @@ import { DockPlugin, DockPresets } from "rete-dock-plugin";
 import { DropDownControl } from "./dropdownControl";
 import { CustomDropDown } from "./dropdownControlUI";
 import { CatchNewElementInfo, ACConnection } from "./ACObjectTypes";
+import { getConnectionSockets } from "./sockets"; // Adjust the path as needed
 import { CatchNewElementNode } from "./nodes/catchNewElementNode";
+import { GetSlabNode } from "./nodes/getSlabNode";
 
 declare var DG: any;
 declare var catchNewElementInfo: CatchNewElementInfo;
@@ -50,6 +52,19 @@ async function createEditor(container: HTMLElement) {
   dock.addPreset(DockPresets.classic.setup({ area, size: 100, scale: 0.6 }));
 
   const editor = new NodeEditor<Schemes>();
+  editor.addPipe((context) => {
+    if (context.type === "connectioncreate") {
+      const { data } = context;
+      const { source, target } = getConnectionSockets(editor, data);
+
+      if (!source.isCompatibleWith(target)) {
+        console.log("Sockets are not compatible", "error");
+        return;
+      }
+    }
+    return context;
+  });
+
   editor.use(area);
   area.use(connection);
   area.use(render);
@@ -59,8 +74,9 @@ async function createEditor(container: HTMLElement) {
     await DG.LoadObject("catchNewElementInfo");
   }
   const elementTypes: string = await catchNewElementInfo.getElementTypes();
+  dock.add (() => new CatchNewElementNode(elementTypes));
   const socket = new ClassicPreset.Socket("socket");
-  dock.add (() => new CatchNewElementNode(socket, elementTypes));
+  dock.add (() => new GetSlabNode(socket));
 
   AreaExtensions.simpleNodesOrder(area);
 
