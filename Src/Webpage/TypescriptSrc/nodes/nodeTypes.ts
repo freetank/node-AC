@@ -1,18 +1,18 @@
 import { GetSchemes, ClassicPreset } from "rete";
 import { ReactArea2D } from "rete-react-plugin";
-import { DropDownControl } from "../dropdownControl";
+import { GetSlabNode } from "./getSlabNode";
+import { CatchNewElementNode } from "./catchNewElementNode";
 
-type NodeData = { [key in string]: ClassicPreset.Socket; }
-type NodeControls = {
-  [key in string]:
-    | DropDownControl
-    | ClassicPreset.Control
-    | ClassicPreset.InputControl<"number">
-    | ClassicPreset.InputControl<"text">
-    | undefined;
-}
+export type Node =
+  | CatchNewElementNode
+  | GetSlabNode;
 
-export class Node extends ClassicPreset.Node<NodeData, NodeData, NodeControls> {}
-type Connection = ClassicPreset.Connection<Node, Node>;
+export class ConnectionBase<
+  A extends Node,
+  B extends Node
+> extends ClassicPreset.Connection<A, B> {}
+type Connection = 
+  | ConnectionBase<CatchNewElementNode, GetSlabNode>;
+
 export type Schemes = GetSchemes<Node, Connection>;
 export type AreaExtra = ReactArea2D<Schemes>;

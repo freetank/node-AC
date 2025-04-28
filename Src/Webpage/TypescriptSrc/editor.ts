@@ -11,7 +11,8 @@ import { DockPlugin, DockPresets } from "rete-dock-plugin";
 import { DropDownControl } from "./dropdownControl";
 import { CustomDropDown } from "./dropdownControlUI";
 import { CatchNewElementInfo, ACConnection } from "./ACObjectTypes";
-import { getConnectionSockets } from "./sockets"; // Adjust the path as needed
+import { DataflowEngine } from "rete-engine";
+import { getConnectionSockets } from "./sockets";
 import { CatchNewElementNode } from "./nodes/catchNewElementNode";
 import { GetSlabNode } from "./nodes/getSlabNode";
 
@@ -65,7 +66,10 @@ async function createEditor(container: HTMLElement) {
     return context;
   });
 
+  const engine = new DataflowEngine<Schemes>()
+
   editor.use(area);
+  editor.use(engine);
   area.use(connection);
   area.use(render);
   area.use(dock);

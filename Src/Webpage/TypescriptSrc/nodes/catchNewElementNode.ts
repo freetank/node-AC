@@ -11,4 +11,8 @@ export class CatchNewElementNode extends ClassicPreset.Node {
 
 	return this;
   }
+
+  data(inputs: Record<string, any>): Promise<Record<string, any>> | Record<string, any> {
+	return new Promise(() => {});
+  }
 }
