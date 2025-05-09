@@ -11,14 +11,20 @@ import { DockPlugin, DockPresets } from "rete-dock-plugin";
 import { DropDownControl } from "./dropdownControl";
 import { CustomDropDown } from "./dropdownControlUI";
 import { CatchNewElementInfo, ACConnection } from "./ACObjectTypes";
-import { DataflowEngine } from "rete-engine";
+import { ControlFlow, ControlFlowEngine, Dataflow, DataflowEngine } from "rete-engine";
 import { getConnectionSockets } from "./sockets";
 import { CatchNewElementNode } from "./nodes/catchNewElementNode";
 import { GetSlabNode } from "./nodes/getSlabNode";
+import { addSideMenu } from "./sideMenu";
+import { StartNode } from "./nodes/startNode";
 
 declare var DG: any;
 declare var catchNewElementInfo: CatchNewElementInfo;
 declare var acConnection: ACConnection;
+
+// TODO PaM: yuck, this is a mess
+let editor: NodeEditor<Schemes> | null = null;
+let controlFlowEngine: ControlFlowEngine<Schemes> | null = null;
 
 async function createEditor(container: HTMLElement) {
   createRoot (container);
@@ -52,11 +58,11 @@ async function createEditor(container: HTMLElement) {
   const dock = new DockPlugin<Schemes>();
   dock.addPreset(DockPresets.classic.setup({ area, size: 100, scale: 0.6 }));
 
-  const editor = new NodeEditor<Schemes>();
+  editor = new NodeEditor<Schemes>();
   editor.addPipe((context) => {
     if (context.type === "connectioncreate") {
       const { data } = context;
-      const { source, target } = getConnectionSockets(editor, data);
+      const { source, target } = getConnectionSockets(editor!, data);
 
       if (!source.isCompatibleWith(target)) {
         console.log("Sockets are not compatible", "error");
@@ -66,10 +72,12 @@ async function createEditor(container: HTMLElement) {
     return context;
   });
 
-  const engine = new DataflowEngine<Schemes>()
+  const dataFlowEngine = new DataflowEngine<Schemes>();
+  controlFlowEngine = new ControlFlowEngine<Schemes>();
 
   editor.use(area);
-  editor.use(engine);
+  editor.use(dataFlowEngine);
+  editor.use(controlFlowEngine);
   area.use(connection);
   area.use(render);
   area.use(dock);
@@ -79,8 +87,7 @@ async function createEditor(container: HTMLElement) {
   }
   const elementTypes: string = await catchNewElementInfo.getElementTypes();
   dock.add (() => new CatchNewElementNode(elementTypes));
-  const socket = new ClassicPreset.Socket("socket");
-  dock.add (() => new GetSlabNode(socket));
+  dock.add (() => new GetSlabNode(dataFlowEngine));
 
   AreaExtensions.simpleNodesOrder(area);
 
@@ -91,14 +98,39 @@ async function createEditor(container: HTMLElement) {
 
   setTimeout(() => {
     // wait until nodes rendered because they dont have predefined width and height
-    AreaExtensions.zoomAt(area, editor.getNodes());
+    AreaExtensions.zoomAt(area, editor!.getNodes());
   }, 10);
   return {
     destroy: () => area.destroy(),
   };
 }
 
+function handleClick () {
+  console.log ("Clicked");
+  const startNodes = editor!
+    .getNodes()
+    .filter((value: ClassicPreset.Node) => value instanceof StartNode);
+
+  for (const node of startNodes) {
+    console.log("Node ID: ", node.id);
+    controlFlowEngine!.execute(node.id);
+  }
+}
+
 window.addEventListener("load", (event) => {
-  const editorContainer = document.getElementById("container")!;
-  createEditor(editorContainer);
+  const container = document.getElementById("container")!;
+  const observer = new MutationObserver((mutationsList, observer) => {
+    for (const mutation of mutationsList) {
+      if (mutation.type === 'childList') {
+        const editorContainer = document.getElementById("editor-container");
+        if (editorContainer) {
+          createEditor(editorContainer);
+          observer.disconnect();
+        }
+      }
+    }
+  });
+
+  observer.observe(container, { childList: true, subtree: true });
+  addSideMenu(container, handleClick);
 });

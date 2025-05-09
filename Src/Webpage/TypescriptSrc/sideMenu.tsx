@@ -53,7 +53,7 @@ const SideMenu: React.FC<SideMenuProps> = ({ handleClick }) => {
 export function addSideMenu (container: HTMLElement, handleClick: (() => void)) {
   createRoot(container).render(
   <Layout className="layout-full-height">
-    <SideMenu handleClick={handleClick}/>
+    <Button onClick={handleClick}/>
     <Layout>
     <Content>
       <div className="full-height" id="editor-container"></div>

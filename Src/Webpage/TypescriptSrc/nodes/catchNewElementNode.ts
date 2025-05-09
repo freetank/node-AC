@@ -1,8 +1,9 @@
 import { ClassicPreset } from "rete";
 import { DropDownControl } from "../dropdownControl";
 import { GuidSocket } from "../sockets";
+import { StartNode } from "./startNode";
 
-export class CatchNewElementNode extends ClassicPreset.Node {
+export class CatchNewElementNode extends StartNode {
   constructor(itemsJSON: string) {
 	super("Event: Catch new element");
 
@@ -12,7 +13,15 @@ export class CatchNewElementNode extends ClassicPreset.Node {
 	return this;
   }
 
-  data(inputs: Record<string, any>): Promise<Record<string, any>> | Record<string, any> {
-	return new Promise(() => {});
+  data(): {elemGuid: string} {
+	console.log("GUID send!");
+	return {
+		elemGuid: "10000000-0000-0000-0000-000000000000"
+	};
+  }
+
+  execute(_: never, forward: (output: string) => void) {
+    console.log("CatchNewElementNode execute");
+    forward("elemGuid");
   }
 }
