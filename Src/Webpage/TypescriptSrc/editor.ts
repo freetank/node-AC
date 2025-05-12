@@ -3,15 +3,16 @@ import { NodeEditor, ClassicPreset } from "rete";
 import { AreaPlugin, AreaExtensions } from "rete-area-plugin";
 import {
   ConnectionPlugin,
-  Presets as ConnectionPresets,
+  Presets as ConnectionPresets
 } from "rete-connection-plugin";
 import { ReactPlugin, Presets } from "rete-react-plugin";
 import { Schemes, AreaExtra } from "./nodes/nodeTypes";
 import { DockPlugin, DockPresets } from "rete-dock-plugin";
+import { Preset } from "rete-dock-plugin/_types/presets/types";
 import { DropDownControl } from "./dropdownControl";
 import { CustomDropDown } from "./dropdownControlUI";
 import { CatchNewElementInfo, ACConnection } from "./ACObjectTypes";
-import { ControlFlow, ControlFlowEngine, Dataflow, DataflowEngine } from "rete-engine";
+import { ControlFlowEngine, DataflowEngine } from "rete-engine";
 import { getConnectionSockets } from "./sockets";
 import { CatchNewElementNode } from "./nodes/catchNewElementNode";
 import { GetSlabNode } from "./nodes/getSlabNode";
@@ -25,6 +26,30 @@ declare var acConnection: ACConnection;
 // TODO PaM: yuck, this is a mess
 let editor: NodeEditor<Schemes> | null = null;
 let controlFlowEngine: ControlFlowEngine<Schemes> | null = null;
+
+class DockPreset implements Preset {
+  size: number;
+  scale: number;
+
+  constructor(size: number, scale: number) {
+    this.size = size;
+    this.scale = scale;
+  }
+
+  createItem(index?: number): HTMLElement | null {
+    const item = document.createElement("div");
+    item.className = "dock-item";
+    item.style.width = `${this.size}px`;
+    item.style.height = `${this.size}px`;
+    item.style.transform = `scale(${this.scale})`;
+    document.getElementById("dock-container")?.appendChild(item);
+    return item;
+  }
+
+  removeItem(element: HTMLElement): void {
+    element.remove();
+  }
+}
 
 async function createEditor(container: HTMLElement) {
   createRoot (container);
@@ -56,7 +81,7 @@ async function createEditor(container: HTMLElement) {
   connection.addPreset(ConnectionPresets.classic.setup());
 
   const dock = new DockPlugin<Schemes>();
-  dock.addPreset(DockPresets.classic.setup({ area, size: 100, scale: 0.6 }));
+  dock.addPreset(new DockPreset(100, 0.6));
 
   editor = new NodeEditor<Schemes>();
   editor.addPipe((context) => {
