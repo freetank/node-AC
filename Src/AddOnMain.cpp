@@ -47,7 +47,6 @@ GSErrCode RegisterInterface ()
 
 GSErrCode Initialize ()
 {
-	ACAPI_KeepInMemory (true);
 	return ACAPI_MenuItem_InstallMenuHandler (AddOnMenuID, MenuCommandHandler);
 }
 
