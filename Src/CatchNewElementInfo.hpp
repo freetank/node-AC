@@ -12,6 +12,7 @@ public:
 	virtual ~CatchNewElementInfo();
 
 	GS::Ref<JS::Base> GetElementTypes(GS::Ref<JS::Base>) const;
+	GS::Ref<JS::Base> RegisterNewElementCallback (GS::Ref<JS::Base> params);
 };
 
 }

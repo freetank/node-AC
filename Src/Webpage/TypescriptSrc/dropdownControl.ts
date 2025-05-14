@@ -51,4 +51,8 @@ export class DropDownControl extends ClassicPreset.Control {
     };
     this.selectedItem = items[0];
   }
+
+  getSelectedItem(): number{
+    return this.selectedItem.key;
+  }
 }

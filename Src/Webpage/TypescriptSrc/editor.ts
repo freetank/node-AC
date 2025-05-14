@@ -23,6 +23,15 @@ declare var DG: any;
 declare var catchNewElementInfo: CatchNewElementInfo;
 declare var acConnection: ACConnection;
 
+async function loadACObjects() {
+  if (typeof catchNewElementInfo === "undefined") {
+    await DG.LoadObject("catchNewElementInfo");
+  }
+  if (typeof acConnection === "undefined") {
+    await DG.LoadObject("acConnection");
+  }
+}
+
 class EditorController {
   private static instance: EditorController | null = null;
   public editor: NodeEditor<Schemes>
@@ -97,18 +106,13 @@ async function createEditor(container: HTMLElement) {
   area.use(render);
   area.use(dock);
 
-  if (typeof catchNewElementInfo === "undefined") {
-    await DG.LoadObject("catchNewElementInfo");
-  }
+  await loadACObjects();
   const elementTypes: string = await catchNewElementInfo.getElementTypes();
   dock.add (() => new CatchNewElementNode(elementTypes));
   dock.add (() => new GetSlabNode(editorController.dataFlowEngine));
 
   AreaExtensions.simpleNodesOrder(area);
 
-  if (typeof acConnection === "undefined") {
-    await DG.LoadObject("acConnection");
-  }
   acConnection.editorCreated();
 
   setTimeout(() => {
