@@ -49,10 +49,21 @@ jobs:
         run: |
           python Tools/BuildAddOn.py --configFile config.json --acVersion ${{ matrix.ac-version }}
 
+      - name: Copy build output to dist (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p Build/Add-on
+          cp -r Build/Node-AC/${{ matrix.ac-version }}/INT/RelWithDebInfo/* Build/Add-on
+        
+      - name: Copy build output to dist (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          New-Item -ItemType Directory -Force -Path Build\Add-on
+          Copy-Item -Path Build\Node-AC\${{ matrix.ac-version }}\INT\RelWithDebInfo\* -Destination Build\Add-on -Recurse -Force
+        shell: pwsh
+
       - name: Archive build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: "${{ matrix.name }}_${{ matrix.os-type }}_${{ matrix.ac-version }}_${{ github.run_number }}"
-          path: |
-            Build/Node-AC/${{ matrix.ac-version }}/INT/RelWithDebInfo*::Build/Node-AC/
-            build/dist
+          path: Build/
