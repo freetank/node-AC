@@ -54,5 +54,5 @@ jobs:
         with:
           name: "${{ matrix.name }}_${{ matrix.os-type }}_${{ matrix.ac-version }}_${{ github.run_number }}"
           path: |
-            Build/Node-AC/${{ matrix.ac-version }}/INT/RelWithDebInfo
+            Build/Node-AC/${{ matrix.ac-version }}/INT/RelWithDebInfo*::Build/Node-AC/
             build/dist
