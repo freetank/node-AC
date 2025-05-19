@@ -1,5 +1,5 @@
-#ifndef __INTERPRETER_HPP__
-#define __INTERPRETER_HPP__
+#ifndef __SCRIPT_BUILDER_HPP__
+#define __SCRIPT_BUILDER_HPP__
 
 #include "UniString.hpp"
 #include "JSValues.hpp"
