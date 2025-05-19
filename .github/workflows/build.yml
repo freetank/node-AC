@@ -25,6 +25,17 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build with webpack
+        run: npx webpack --mode production
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -38,8 +49,23 @@ jobs:
         run: |
           python Tools/BuildAddOn.py --configFile config.json --acVersion ${{ matrix.ac-version }}
 
+      - name: Copy build output to dist (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p Build/Add-on
+          cp -r Build/Node-AC/${{ matrix.ac-version }}/INT/RelWithDebInfo/* Build/Add-on
+        
+      - name: Copy build output to dist (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          New-Item -ItemType Directory -Force -Path Build\Add-on
+          Copy-Item -Path Build\Node-AC\${{ matrix.ac-version }}\INT\RelWithDebInfo\* -Destination Build\Add-on -Recurse -Force
+        shell: pwsh
+
       - name: Archive build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ matrix.name }}_${{ matrix.os-type }}_${{ github.run_number }}"
-          path: Build/Node-AC/27/INT/RelWithDebInfo
+          name: "${{ matrix.name }}_${{ matrix.os-type }}_${{ matrix.ac-version }}_${{ github.run_number }}"
+          path: |
+            Build/Add-on
+            build/dist
