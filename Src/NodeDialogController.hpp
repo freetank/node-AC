@@ -17,6 +17,9 @@ public:
 	virtual void ScriptBuildingDone (const GS::UniString& script) override;
 
 private:
+	GS::UniString GetIndexHtmlURI () const;
+
+private:
 	UI::NodeDialog dialog;
 	BrowserConnection browserConnection;
 };
