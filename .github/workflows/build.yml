@@ -66,4 +66,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: "${{ matrix.name }}_${{ matrix.os-type }}_${{ matrix.ac-version }}_${{ github.run_number }}"
-          path: Build/
+          path: |
+            Build/Add-on
+            build/dist
