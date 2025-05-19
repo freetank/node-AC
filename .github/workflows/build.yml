@@ -25,6 +25,17 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build with webpack
+        run: npx webpack --mode production
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -42,4 +53,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: "${{ matrix.name }}_${{ matrix.os-type }}_${{ github.run_number }}"
-          path: Build/Node-AC/27/INT/RelWithDebInfo
+          path: |
+            Build/Node-AC/${{ matrix.ac-version }}/INT/RelWithDebInfo
+            build/dist
