@@ -12,6 +12,7 @@ BrowserConnection::BrowserConnection(JavascriptEngine& engine) :
 
 	engine.RegisterAsynchJSObject (this);
 	engine.RegisterAsynchJSObject (&catchNewElementInfo);
+	engine.RegisterAsynchJSObject (&scriptBuilder);
 }
 
 BrowserConnection::~BrowserConnection() = default;
@@ -23,6 +24,16 @@ void BrowserConnection::ExecuteJS (const GS::UniString& jsCode)
 	} else {
 		queue.push (jsCode);
 	}
+}
+
+void BrowserConnection::Attach (IScriptBuilderEventHandler& observer)
+{
+	scriptBuilder.Attach (observer);
+}
+
+void BrowserConnection::Detach (IScriptBuilderEventHandler& observer)
+{
+	scriptBuilder.Detach (observer);
 }
 
 void BrowserConnection::FlushQueue ()

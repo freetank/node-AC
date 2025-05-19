@@ -6,3 +6,7 @@ export declare interface CatchNewElementInfo {
 export declare interface ACConnection {
   editorCreated (): void;
 }
+
+export declare interface ScriptBuilder {
+  scriptCreationDone (): void;
+}

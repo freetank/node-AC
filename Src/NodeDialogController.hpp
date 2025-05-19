@@ -3,15 +3,18 @@
 
 #include "NodeDialog.hpp"
 #include "BrowserConnection.hpp"
+#include "IScriptBuilderEventHandler.hpp"
 
 namespace Controller {
 
-class NodeDialog {
+class NodeDialog : public IScriptBuilderEventHandler {
 public:
 	NodeDialog ();
 	virtual ~NodeDialog ();
 
 	bool InvokeDialog ();
+
+	virtual void ScriptBuildingDone (const GS::UniString& script) override;
 
 private:
 	UI::NodeDialog dialog;

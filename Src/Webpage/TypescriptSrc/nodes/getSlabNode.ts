@@ -2,6 +2,9 @@ import { ClassicPreset } from "rete";
 import { FloatingNumberSocket, GuidSocket } from "../sockets";
 import { DataflowEngine } from "rete-engine";
 import { Schemes } from "./nodeTypes";
+import { ScriptBuilder } from "../ACObjectTypes";
+
+declare var scriptBuilder: ScriptBuilder
 
 export class GetSlabNode extends ClassicPreset.Node {
   constructor(private dataflow: DataflowEngine<Schemes>) {
@@ -28,6 +31,7 @@ export class GetSlabNode extends ClassicPreset.Node {
     console.log("GetSlabNode execute");
     const inputs = await this.dataflow.fetchInputs(this.id);
     console.log("Inputs: ", inputs);
+    scriptBuilder.scriptCreationDone();
     forward("level");
     forward("thickness");
   }

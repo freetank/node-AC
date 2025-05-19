@@ -2,14 +2,13 @@ import { ClassicPreset } from "rete";
 import { DropDownControl } from "../dropdownControl";
 import { GuidSocket } from "../sockets";
 import { StartNode } from "./startNode";
-import { CatchNewElementInfo } from "../ACObjectTypes";
-
-declare var catchNewElementInfo: CatchNewElementInfo;
+import { DataflowEngine } from "rete-engine";
+import { Schemes } from "./nodeTypes";
 
 export class CatchNewElementNode extends StartNode {
   private dropdownControl: DropDownControl;
 
-  constructor(itemsJSON: string) {
+  constructor(itemsJSON: string, private dataflow: DataflowEngine<Schemes>) {
     super("Event: Catch new element");
 
     this.dropdownControl = new DropDownControl(itemsJSON);
@@ -26,9 +25,9 @@ export class CatchNewElementNode extends StartNode {
     };
   }
 
-  execute(_: never, forward: (output: string) => void) {
+  async execute(_: never, forward: (output: string) => void) {
     console.log("CatchNewElementNode execute");
-    catchNewElementInfo.registerNewElementCallback(this.dropdownControl.getSelectedItem());
+    await this.dataflow.fetch(this.id);
     forward("elemGuid");
   }
 }

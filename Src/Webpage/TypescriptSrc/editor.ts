@@ -10,7 +10,7 @@ import { Schemes, AreaExtra } from "./nodes/nodeTypes";
 import { DockPlugin } from "rete-dock-plugin";
 import { DropDownControl } from "./dropdownControl";
 import { CustomDropDown } from "./dropdownControlUI";
-import { CatchNewElementInfo, ACConnection } from "./ACObjectTypes";
+import { CatchNewElementInfo, ACConnection, ScriptBuilder } from "./ACObjectTypes";
 import { ControlFlowEngine, DataflowEngine } from "rete-engine";
 import { getConnectionSockets } from "./sockets";
 import { CatchNewElementNode } from "./nodes/catchNewElementNode";
@@ -22,6 +22,7 @@ import { DockPreset } from "./nodes/dockPreset";
 declare var DG: any;
 declare var catchNewElementInfo: CatchNewElementInfo;
 declare var acConnection: ACConnection;
+declare var scriptBuilder: ScriptBuilder
 
 async function loadACObjects() {
   if (typeof catchNewElementInfo === "undefined") {
@@ -29,6 +30,10 @@ async function loadACObjects() {
   }
   if (typeof acConnection === "undefined") {
     await DG.LoadObject("acConnection");
+  }
+
+  if (typeof scriptBuilder === "undefined") {
+    await DG.LoadObject("scriptBuilder");
   }
 }
 
@@ -108,7 +113,7 @@ async function createEditor(container: HTMLElement) {
 
   await loadACObjects();
   const elementTypes: string = await catchNewElementInfo.getElementTypes();
-  dock.add (() => new CatchNewElementNode(elementTypes));
+  dock.add (() => new CatchNewElementNode(elementTypes, editorController.dataFlowEngine));
   dock.add (() => new GetSlabNode(editorController.dataFlowEngine));
 
   AreaExtensions.simpleNodesOrder(area);

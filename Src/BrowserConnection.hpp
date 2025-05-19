@@ -4,8 +4,12 @@
 #include "JSValues.hpp"
 #include <queue>
 #include "CatchNewElementInfo.hpp"
+#include "ScriptBuilder.hpp"
 
 class JavascriptEngine;
+namespace Controller {
+	class IScriptBuilderEventHandler;
+}
 
 namespace Controller {
 
@@ -15,6 +19,9 @@ public:
 	virtual ~BrowserConnection();
 
 	void ExecuteJS (const GS::UniString& jsCode);
+
+	void Attach (IScriptBuilderEventHandler& observer);
+	void Detach (IScriptBuilderEventHandler& observer);
 
 private :
 	void FlushQueue ();
@@ -26,6 +33,7 @@ private:
 	bool isEditorCreated;
 
 	CatchNewElementInfo catchNewElementInfo;
+	ScriptBuilder scriptBuilder;
 };
 
 }
