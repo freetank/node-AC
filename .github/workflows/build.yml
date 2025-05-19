@@ -52,7 +52,7 @@ jobs:
       - name: Archive build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: "${{ matrix.name }}_${{ matrix.os-type }}_${{ github.run_number }}"
+          name: "${{ matrix.name }}_${{ matrix.os-type }}_${{ matrix.ac-version }}_${{ github.run_number }}"
           path: |
             Build/Node-AC/${{ matrix.ac-version }}/INT/RelWithDebInfo
             build/dist
