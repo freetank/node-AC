@@ -2,8 +2,6 @@ import { ClassicPreset } from "rete";
 import { DropDownControl } from "../dropdownControl";
 import { GuidSocket } from "../sockets";
 import { StartNode } from "./startNode";
-import { DataflowEngine } from "rete-engine";
-import { Schemes } from "./nodeTypes";
 import { v4 as uuidv4 } from 'uuid';
 import { ScriptBuilder } from "../ACObjectTypes";
 
@@ -13,7 +11,7 @@ export class CatchNewElementNode extends StartNode {
   private dropdownControl: DropDownControl;
   private guid: string;
 
-  constructor(itemsJSON: string, private dataflow: DataflowEngine<Schemes>) {
+  constructor(itemsJSON: string) {
     super("Event: Catch new element");
 
     this.guid = uuidv4();

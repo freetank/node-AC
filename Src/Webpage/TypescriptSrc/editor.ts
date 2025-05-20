@@ -114,7 +114,7 @@ async function createEditor(container: HTMLElement) {
 
   await loadACObjects();
   const elementTypes: string = await catchNewElementInfo.getElementTypes();
-  dock.add (() => new CatchNewElementNode(elementTypes, editorController.dataFlowEngine));
+  dock.add (() => new CatchNewElementNode(elementTypes));
   dock.add (() => new GetSlabNode(editorController.dataFlowEngine));
   dock.add (() => new LayoutGenerator(editorController.dataFlowEngine));
 
