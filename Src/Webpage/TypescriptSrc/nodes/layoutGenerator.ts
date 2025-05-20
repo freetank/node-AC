@@ -14,7 +14,6 @@ export class LayoutGenerator extends ClassicPreset.Node {
     super("Layout generator");
 
     this.zonePrefixControl = new ClassicPreset.InputControl('text', { readonly: false, initial: 'Zone ' });
-    this.addInput("slabPos", new ClassicPreset.Input(new PositionSocket (), "Slab Position"));
     this.addInput("slabPoly", new ClassicPreset.Input(new PolygonSocket (), "Slab Polygon"));
 
     this.addOutput("zonePositions", new ClassicPreset.Output(new PolygonListSocket (), "Zone Position"));
@@ -26,9 +25,7 @@ export class LayoutGenerator extends ClassicPreset.Node {
     return this;
   }
 
-  data(inputs: {slabPos: Coordinate, slabPoly: Polygon, namePrefix: string}): {zonePositions: Coordinate[], zonePolygons: Polygon[], zoneNames: string[]} {
-    console.log("Slab Position arrived!");
-    console.log(inputs.slabPos);
+  data(inputs: {slabPoly: Polygon, namePrefix: string}): {zonePositions: Coordinate[], zonePolygons: Polygon[], zoneNames: string[]} {
     console.log("Slab Polygon arrived!");
     console.log(inputs.slabPoly);
     console.log("Name Prefix was always here!");

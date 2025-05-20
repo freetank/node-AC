@@ -15,7 +15,6 @@ export class GetSlabNode extends ClassicPreset.Node {
 
     this.addOutput("level", new ClassicPreset.Output(new FloatingNumberSocket (), "Level"));
     this.addOutput("thickness", new ClassicPreset.Output(new FloatingNumberSocket (), "Thickness"));
-    this.addOutput("position", new ClassicPreset.Output(new PositionSocket (), "Position"));
     this.addOutput("polygon", new ClassicPreset.Output(new PolygonSocket (), "Polygon"));
 
     return this;
@@ -41,7 +40,6 @@ export class GetSlabNode extends ClassicPreset.Node {
     scriptBuilder.getElement(inputs.elemGuid[0]);
     forward("level");
     forward("thickness");
-    forward("position");
     forward("polygon");
 
     scriptBuilder.scriptCreationDone(); // TODO PaM: remove this
