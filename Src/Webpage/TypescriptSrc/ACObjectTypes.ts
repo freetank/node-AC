@@ -1,6 +1,5 @@
 export declare interface CatchNewElementInfo {
-  getElementTypes(): any; 
-  registerNewElementCallback (elementID: number): any;
+  getElementTypes(): any;
 }
 
 export declare interface ACConnection {
@@ -8,5 +7,6 @@ export declare interface ACConnection {
 }
 
 export declare interface ScriptBuilder {
+  catchNewElement (elementID: number, guid: string): void;
   scriptCreationDone (): void;
 }

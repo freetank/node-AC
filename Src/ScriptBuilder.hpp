@@ -22,7 +22,10 @@ public:
 	void Detach (IScriptBuilderEventHandler& observer);
 
 private:
-	GS::Ref<JS::Base> ScriptCreationDone (GS::Ref<JS::Base>);
+	GS::Ref<JS::Base> CatchNewElement (GS::Ref<JS::Base> params);
+	GS::Ref<JS::Base> ScriptCreationDone (GS::Ref<JS::Base> params);
+
+	void ResetScript ();
 
 private:
 	GS::UniString script;

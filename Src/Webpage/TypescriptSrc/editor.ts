@@ -22,7 +22,7 @@ import { DockPreset } from "./nodes/dockPreset";
 declare var DG: any;
 declare var catchNewElementInfo: CatchNewElementInfo;
 declare var acConnection: ACConnection;
-declare var scriptBuilder: ScriptBuilder
+declare var scriptBuilder: ScriptBuilder;
 
 async function loadACObjects() {
   if (typeof catchNewElementInfo === "undefined") {

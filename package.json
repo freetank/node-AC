@@ -15,7 +15,8 @@
     "rete-engine": "^2.1.1",
     "rete-react-plugin": "^2.0.5",
     "rete-render-utils": "^2.0.2",
-    "styled-components": "^6.1.12"
+    "styled-components": "^6.1.12",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/react-dom": "^18.3.0",

@@ -11,7 +11,6 @@ CatchNewElementInfo::CatchNewElementInfo () :
 	JS::Object ("catchNewElementInfo")
 {
 	AddItem (new JS::Function ("getElementTypes", std::bind(&CatchNewElementInfo::GetElementTypes, this, std::placeholders::_1)));
-	AddItem (new JS::Function ("registerNewElementCallback", std::bind(&CatchNewElementInfo::RegisterNewElementCallback, this, std::placeholders::_1)));
 }
 
 CatchNewElementInfo::~CatchNewElementInfo () = default;
@@ -53,26 +52,6 @@ GS::Ref<JS::Base> CatchNewElementInfo::GetElementTypes (GS::Ref<JS::Base>) const
 	}
 
 	return new JS::Value (GS::UniString::Printf (elementTypes, elements.ToPrintf ()));
-}
-
-GSErrCode ElementEventHandler (const API_NotifyElementType */* elemType */)
-{
-	return NoError;
-}
-
-GS::Ref<JS::Base> CatchNewElementInfo::RegisterNewElementCallback (GS::Ref<JS::Base> params)
-{
-	const Int32 elementID = GS::DynamicCast<JS::Value> (params)->GetInteger ();
-	API_ToolBoxItem toolboxItem = {};
-	toolboxItem.type = API_ElemType (static_cast<API_ElemTypeID> (elementID));
-
-	GSErrCode error = ACAPI_Element_CatchNewElement (&toolboxItem, ElementEventHandler);
-
-	if (error != NoError) {
-		return new JS::Value (error);
-	}
-
-	return new JS::Value ();
 }
 
 }

@@ -4,12 +4,19 @@ import { GuidSocket } from "../sockets";
 import { StartNode } from "./startNode";
 import { DataflowEngine } from "rete-engine";
 import { Schemes } from "./nodeTypes";
+import { v4 as uuidv4 } from 'uuid';
+import { ScriptBuilder } from "../ACObjectTypes";
+
+declare var scriptBuilder: ScriptBuilder;
 
 export class CatchNewElementNode extends StartNode {
   private dropdownControl: DropDownControl;
+  private guid: string;
 
   constructor(itemsJSON: string, private dataflow: DataflowEngine<Schemes>) {
     super("Event: Catch new element");
+
+    this.guid = uuidv4();
 
     this.dropdownControl = new DropDownControl(itemsJSON);
     this.addControl("dropdown", this.dropdownControl);
@@ -19,15 +26,15 @@ export class CatchNewElementNode extends StartNode {
   }
 
   data(): {elemGuid: string} {
-    console.log("GUID send!");
+    console.log("CatchNewElementNode data: " + this.guid);
     return {
-      elemGuid: "10000000-0000-0000-0000-000000000000"
+      elemGuid: this.guid
     };
   }
 
   async execute(_: never, forward: (output: string) => void) {
-    console.log("CatchNewElementNode execute");
-    await this.dataflow.fetch(this.id);
+    console.log("CatchNewElementNode execute: " + this.guid);
+    scriptBuilder.catchNewElement(this.dropdownControl.getSelectedItem(), this.guid);
     forward("elemGuid");
   }
 }

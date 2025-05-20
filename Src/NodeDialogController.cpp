@@ -18,8 +18,9 @@ bool NodeDialog::InvokeDialog () {
 	return dialog.Invoke ();
 }
 
-void NodeDialog::ScriptBuildingDone (const GS::UniString& /* script */)
+void NodeDialog::ScriptBuildingDone (const GS::UniString& script)
 {
+	ACAPI_WriteReport (script, false);
 }
 
 GS::UniString NodeDialog::GetIndexHtmlURI () const
