@@ -21,8 +21,68 @@ export class FloatingNumberSocket extends ClassicPreset.Socket {
   }
 }
 
+export class PositionSocket extends ClassicPreset.Socket {
+  constructor() {
+    super("Position");
+  }
+
+  isCompatibleWith(socket: ClassicPreset.Socket) {
+    return socket instanceof PositionSocket;
+  }
+}
+
+export class PolygonSocket extends ClassicPreset.Socket {
+  constructor() {
+    super("Position");
+  }
+
+  isCompatibleWith(socket: ClassicPreset.Socket) {
+    return socket instanceof PolygonSocket;
+  }
+}
+
+export class StringSocket extends ClassicPreset.Socket {
+  constructor() {
+    super("string");
+  }
+
+  isCompatibleWith(socket: ClassicPreset.Socket) {
+    return socket instanceof StringSocket;
+  }
+}
+
+export class PolygonListSocket extends ClassicPreset.Socket {
+  constructor() {
+    super("PolygonList");
+  }
+
+  isCompatibleWith(socket: ClassicPreset.Socket) {
+    return socket instanceof PolygonListSocket;
+  }
+}
+
+export class PositionListSocket extends ClassicPreset.Socket {
+  constructor() {
+    super("PositionListSocket");
+  }
+
+  isCompatibleWith(socket: ClassicPreset.Socket) {
+    return socket instanceof PositionListSocket;
+  }
+}
+
+export class StringListSocket extends ClassicPreset.Socket {
+  constructor() {
+    super("StringListSocket");
+  }
+
+  isCompatibleWith(socket: ClassicPreset.Socket) {
+    return socket instanceof StringListSocket;
+  }
+}
+
 // TODO PaM Find an appropriate place for this class
-type Sockets = GuidSocket | FloatingNumberSocket;
+type Sockets = GuidSocket | FloatingNumberSocket | PositionSocket | PolygonSocket | StringSocket | PolygonListSocket | PositionListSocket | StringListSocket;
 type Input = ClassicPreset.Input<Sockets>;
 type Output = ClassicPreset.Output<Sockets>;
 

@@ -15,6 +15,7 @@ import { ControlFlowEngine, DataflowEngine } from "rete-engine";
 import { getConnectionSockets } from "./sockets";
 import { CatchNewElementNode } from "./nodes/catchNewElementNode";
 import { GetSlabNode } from "./nodes/getSlabNode";
+import { LayoutGenerator } from "./nodes/layoutGenerator";
 import { addSideMenu } from "./sideMenu";
 import { StartNode } from "./nodes/startNode";
 import { DockPreset } from "./nodes/dockPreset";
@@ -115,6 +116,7 @@ async function createEditor(container: HTMLElement) {
   const elementTypes: string = await catchNewElementInfo.getElementTypes();
   dock.add (() => new CatchNewElementNode(elementTypes));
   dock.add (() => new GetSlabNode(editorController.dataFlowEngine));
+  dock.add (() => new LayoutGenerator(editorController.dataFlowEngine));
 
   AreaExtensions.simpleNodesOrder(area);
 
