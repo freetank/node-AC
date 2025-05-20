@@ -29,10 +29,14 @@ export class GetSlabNode extends ClassicPreset.Node {
 
   async execute(_: never, forward: (output: string) => void) {
     console.log("GetSlabNode execute");
+
     const inputs = await this.dataflow.fetchInputs(this.id);
     console.log("Inputs: ", inputs);
-    scriptBuilder.scriptCreationDone();
+
+    scriptBuilder.getElement(inputs.elemGuid[0]);
     forward("level");
     forward("thickness");
+
+    scriptBuilder.scriptCreationDone(); // TODO PaM: remove this
   }
 }
