@@ -21,6 +21,7 @@ bool NodeDialog::InvokeDialog () {
 void NodeDialog::ScriptBuildingDone (const GS::UniString& script)
 {
 	ACAPI_WriteReport (script, false);
+	interpreter.RunScript (script);
 }
 
 GS::UniString NodeDialog::GetIndexHtmlURI () const
