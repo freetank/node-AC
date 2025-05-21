@@ -5,3 +5,4 @@ out/*
 CMakeUserPresets.json
 APIDevKit-*/
 node_modules/*
+**/__pycache__
