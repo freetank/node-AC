@@ -9,11 +9,16 @@ declare var scriptBuilder: ScriptBuilder
 
 export class LayoutGenerator extends ClassicPreset.Node {
   private zonePrefixControl: ClassicPreset.InputControl<'text'>;
+  private userPromptControl: ClassicPreset.InputControl<'text'>;
+
+  private userPromptInitial: string = "Extra input";
+
 
   constructor(private dataflow: DataflowEngine<Schemes>) {
     super("Layout generator");
 
     this.zonePrefixControl = new ClassicPreset.InputControl('text', { readonly: false, initial: 'Zone ' });
+    this.userPromptControl = new ClassicPreset.InputControl('text', { readonly: false, initial: this.userPromptInitial });
     this.addInput("slabPoly", new ClassicPreset.Input(new PolygonSocket (), "Slab Polygon"));
 
     this.addOutput("zonePositions", new ClassicPreset.Output(new PositionListSocket (), "Zone Position"));
@@ -21,11 +26,12 @@ export class LayoutGenerator extends ClassicPreset.Node {
     this.addOutput("zoneNames", new ClassicPreset.Output(new StringListSocket (), "Zone names"));
     
     this.addControl("namePrefix", this.zonePrefixControl);
+    this.addControl("userPrompt", this.userPromptControl);
 
     return this;
   }
 
-  data(_: {slabPoly: Polygon, namePrefix: string}): {zonePositions: Coordinate[], zonePolygons: Polygon[], zoneNames: string[]} {
+  data(_: {slabPoly: Polygon}): {zonePositions: Coordinate[], zonePolygons: Polygon[], zoneNames: string[]} {
     return {
       zonePositions: [[0, 0], [1, 1], [2, 2]],
       zonePolygons: [[[0, 0], [1, 1], [2, 2]], [[3, 3], [4, 4], [5, 5]], [[3, 3], [4, 4], [5, 5]]],
@@ -45,7 +51,8 @@ export class LayoutGenerator extends ClassicPreset.Node {
         body: JSON.stringify({
             // your data here, for example:
             slabPoly: inputs.slabPoly,
-            namePrefix: this.zonePrefixControl.value ? this.zonePrefixControl.value : ""
+            namePrefix: this.zonePrefixControl.value ? this.zonePrefixControl.value : "",
+            userPrompt: this.userPromptControl.value && this.userPromptControl.value !== this.userPromptInitial ? this.userPromptControl.value : ""
         })
     })
     .then(response => response.json())
@@ -53,6 +60,7 @@ export class LayoutGenerator extends ClassicPreset.Node {
         console.log("Success:", data);
         forward("zoneNames");
 
+        console.log(scriptBuilder.getElements("Wall"));
         // TODO: Check if more input comes from the same node
         // forward("zonePositions");
         // forward("zonePolygons");
