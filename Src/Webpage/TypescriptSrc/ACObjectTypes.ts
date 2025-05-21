@@ -9,5 +9,6 @@ export declare interface ACConnection {
 export declare interface ScriptBuilder {
   catchNewElement (elementID: number, guid: string): void;
   getElement (guid: string): void;
+  generateLayout (description: string): void;
   scriptCreationDone (): void;
 }

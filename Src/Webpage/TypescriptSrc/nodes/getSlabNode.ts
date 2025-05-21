@@ -20,9 +20,7 @@ export class GetSlabNode extends ClassicPreset.Node {
     return this;
   }
 
-  data(inputs: {elemGuid: string}): {level: number, thickness: number, position: Coordinate, polygon: Polygon} {
-    console.log("GUID arrived!");
-    console.log(inputs.elemGuid);
+  data(_: {elemGuid: string}): {level: number, thickness: number, position: Coordinate, polygon: Polygon} {
     return {
       level: 3,
       thickness: 11.4,
@@ -38,10 +36,9 @@ export class GetSlabNode extends ClassicPreset.Node {
     console.log("Inputs: ", inputs);
 
     scriptBuilder.getElement(inputs.elemGuid[0]);
+
     forward("level");
     forward("thickness");
     forward("polygon");
-
-    scriptBuilder.scriptCreationDone(); // TODO PaM: remove this
   }
 }

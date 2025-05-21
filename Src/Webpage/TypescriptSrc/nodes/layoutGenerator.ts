@@ -25,11 +25,7 @@ export class LayoutGenerator extends ClassicPreset.Node {
     return this;
   }
 
-  data(inputs: {slabPoly: Polygon, namePrefix: string}): {zonePositions: Coordinate[], zonePolygons: Polygon[], zoneNames: string[]} {
-    console.log("Slab Polygon arrived!");
-    console.log(inputs.slabPoly);
-    console.log("Name Prefix was always here!");
-    console.log(this.zonePrefixControl.value);
+  data(_: {slabPoly: Polygon, namePrefix: string}): {zonePositions: Coordinate[], zonePolygons: Polygon[], zoneNames: string[]} {
     return {
       zonePositions: [[0, 0], [1, 1], [2, 2]],
       zonePolygons: [[[0, 0], [1, 1], [2, 2]], [[3, 3], [4, 4], [5, 5]], [[3, 3], [4, 4], [5, 5]]],
@@ -37,14 +33,16 @@ export class LayoutGenerator extends ClassicPreset.Node {
     };
   }
 
-  async execute(_: never, forward: (output: string) => void) {
+  async execute(_: string, forward: (output: string) => void) {
     console.log("LayoutGenerator execute");
-    const inputs = await this.dataflow.fetchInputs(this.id);
-    console.log("Inputs: ", inputs);
-    console.log("Zone Prefix: ", this.zonePrefixControl.value);
-    scriptBuilder.scriptCreationDone();
-    forward("zonePositions");
-    forward("zonePolygons");
+    scriptBuilder.generateLayout(this.zonePrefixControl.value ? this.zonePrefixControl.value : "");
+
+    // TODO: Check if more input comes from the same node
+    // forward("zonePositions");
+    // forward("zonePolygons");
+
     forward("zoneNames");
+
+    scriptBuilder.scriptCreationDone(); // TODO PaM: remove this
   }
 }
