@@ -19,9 +19,9 @@ def generate_layout():
         http_client=httpx.Client(verify=False)
     )
     result = client.chat.completions.create (
-        model="gpt-4o",
+        model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": "You are a helpful assistant that only returns JSON arrays of polygons. You will be given a slab polygon and a name prefix. You will return a JSON array of polygons and names in pairs."},
+            {"role": "system", "content": "You are a helpful assistant that only returns JSON arrays of polygons. You will be given a slab polygon and a name prefix. Return the result as a list of names and polygons like [(name1, [(x1,y1),...]),...]. No extra words."},
             {"role": "user", "content": f"name prefix: {name_prefix}, polygon: {slab_poly}, extra input: {userPrompt}"}
         ])
 
