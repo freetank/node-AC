@@ -1,5 +1,6 @@
 #include "ScriptBuilder.hpp"
 #include "IScriptBuilderEventHandler.hpp"
+#include "ACAPinc.h"
 
 namespace Controller {
 
@@ -9,6 +10,7 @@ ScriptBuilder::ScriptBuilder () :
 {
 	ResetScript ();
 	AddItem (new JS::Function ("catchNewElement", std::bind(&ScriptBuilder::CatchNewElement, this, std::placeholders::_1)));
+	AddItem (new JS::Function ("getElements", std::bind(&ScriptBuilder::GetElements, this, std::placeholders::_1)));
 	AddItem (new JS::Function ("getElement", std::bind(&ScriptBuilder::GetElement, this, std::placeholders::_1)));
 	AddItem (new JS::Function ("generateLayout", std::bind(&ScriptBuilder::GenerateLayout, this, std::placeholders::_1)));
 	AddItem (new JS::Function ("scriptCreationDone", std::bind(&ScriptBuilder::ScriptCreationDone, this, std::placeholders::_1)));
@@ -55,6 +57,7 @@ GS::Ref<JS::Base> ScriptBuilder::GetElement (GS::Ref<JS::Base> params)
 {
 	const GS::UniString guid = GS::DynamicCast<JS::Value> (params)->GetString ();
 
+	GS::Array<API_Guid> guids;
 	script += GS::UniString::Printf (
 		u"\"ACAPI_Element_Get\": {\n\
 			\"guid\": \"%T\"\n\
@@ -63,6 +66,35 @@ GS::Ref<JS::Base> ScriptBuilder::GetElement (GS::Ref<JS::Base> params)
 	);
 
 	return new JS::Base ();
+}
+
+GS::Ref<JS::Base> ScriptBuilder::GetElements (GS::Ref<JS::Base> params)
+{	
+	const GS::UniString elementID = GS::DynamicCast<JS::Value> (params)->GetString ();
+
+	script += GS::UniString::Printf (
+		u"\"ACAPI_Element_GetElemList\": {\n\
+			\"elementID\": \"%T\"\n\
+		}\n,"sv,
+		elementID.ToPrintf ()
+	);
+
+	std::map<GS::UniString, API_ElemTypeID> elementTypesMap = {
+		{"Zombie", API_ZombieElemID},
+		{"Wall", API_WallID},
+		{"Column", API_ColumnID},
+		{"Beam", API_BeamID},
+		{"Slab", API_SlabID}
+	};
+
+	GS::Array<API_Guid> guids;
+	ACAPI_Element_GetElemList (elementTypesMap[elementID], &guids);
+	GS::Ref<JS::Array> jsGuids = new JS::Array ();
+	for (const auto& guid : guids) {
+		jsGuids->AddItem (new JS::Value (APIGuidToString (guid)));
+	}
+
+	return jsGuids;
 }
 
 GS::Ref<JS::Base> ScriptBuilder::GenerateLayout (GS::Ref<JS::Base> params)

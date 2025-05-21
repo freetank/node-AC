@@ -25,6 +25,7 @@ private:
 	GS::Ref<JS::Base> CatchNewElement (GS::Ref<JS::Base> params);
 	GS::Ref<JS::Base> ScriptCreationDone (GS::Ref<JS::Base> params);
 	GS::Ref<JS::Base> GetElement (GS::Ref<JS::Base> params);
+	GS::Ref<JS::Base> GetElements (GS::Ref<JS::Base> params);
 	GS::Ref<JS::Base> GenerateLayout (GS::Ref<JS::Base> params);
 
 	void ResetScript ();
