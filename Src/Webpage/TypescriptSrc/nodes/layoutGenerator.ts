@@ -1,5 +1,5 @@
 import { ClassicPreset } from "rete";
-import { PolygonSocket, PositionSocket, StringSocket, PolygonListSocket, PositionListSocket, StringListSocket } from "../sockets";
+import { PolygonSocket, PositionSocket, PolygonListSocket, PositionListSocket, StringListSocket } from "../sockets";
 import { DataflowEngine } from "rete-engine";
 import { Schemes } from "./nodeTypes";
 import { ScriptBuilder } from "../ACObjectTypes";
@@ -16,7 +16,7 @@ export class LayoutGenerator extends ClassicPreset.Node {
     this.zonePrefixControl = new ClassicPreset.InputControl('text', { readonly: false, initial: 'Zone ' });
     this.addInput("slabPoly", new ClassicPreset.Input(new PolygonSocket (), "Slab Polygon"));
 
-    this.addOutput("zonePositions", new ClassicPreset.Output(new PolygonListSocket (), "Zone Position"));
+    this.addOutput("zonePositions", new ClassicPreset.Output(new PositionListSocket (), "Zone Position"));
     this.addOutput("zonePolygons", new ClassicPreset.Output(new PolygonListSocket (), "Zone Polygons"));
     this.addOutput("zoneNames", new ClassicPreset.Output(new StringListSocket (), "Zone names"));
     
@@ -35,14 +35,32 @@ export class LayoutGenerator extends ClassicPreset.Node {
 
   async execute(_: string, forward: (output: string) => void) {
     console.log("LayoutGenerator execute");
-    scriptBuilder.generateLayout(this.zonePrefixControl.value ? this.zonePrefixControl.value : "");
+    
+    const inputs = await this.dataflow.fetchInputs(this.id);
+    fetch("http://localhost:9500/generate-layout", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            // your data here, for example:
+            slabPoly: inputs.slabPoly,
+            namePrefix: this.zonePrefixControl.value ? this.zonePrefixControl.value : ""
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Success:", data);
+        forward("zoneNames");
 
-    // TODO: Check if more input comes from the same node
-    // forward("zonePositions");
-    // forward("zonePolygons");
+        // TODO: Check if more input comes from the same node
+        // forward("zonePositions");
+        // forward("zonePolygons");
 
-    forward("zoneNames");
-
-    scriptBuilder.scriptCreationDone(); // TODO PaM: remove this
+        scriptBuilder.scriptCreationDone(); // TODO PaM: remove this
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
   }
 }
