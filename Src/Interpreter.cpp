@@ -41,7 +41,6 @@ private:
 
 void CatchNewElement::Run (const rapidjson::Value& value)
 {
-	// TODO PaM: Test it
 	auto elementID = value.FindMember ("elementID");
 
 	API_ToolBoxItem toolboxItem = {};
@@ -90,8 +89,6 @@ public:
 
 void GenerateLayout::Run (const rapidjson::Value& value)
 {
-	auto valami = value.GetType ();
-	valami = value.GetType ();
 	ACAPI_WriteReport (GS::UniString::Printf (u"Key: GenerateLayout, Value: %s\n"sv, value.GetString()), false);
 }
 
