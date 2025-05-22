@@ -1,5 +1,5 @@
 import { ClassicPreset } from "rete";
-import { PolygonSocket, PositionSocket, PolygonListSocket, PositionListSocket, StringListSocket } from "../sockets";
+import { PolygonSocket, PolygonListSocket, StringListSocket } from "../sockets";
 import { DataflowEngine } from "rete-engine";
 import { Schemes } from "./nodeTypes";
 import { ScriptBuilder } from "../ACObjectTypes";
