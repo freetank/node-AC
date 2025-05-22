@@ -9,9 +9,9 @@ export declare interface ACConnection {
 }
 
 export declare interface ScriptBuilder {
-  catchNewElement (elementID: number, guid: string): void;
+  getSelection (): Promise<string>;
   getElements (elementID: string): any;
-  getElement (guid: string): void;
+  getSlab (guid: string): any;
   generateLayout (description: string, slabPoly: Polygon): void;
   scriptCreationDone (): void;
 }

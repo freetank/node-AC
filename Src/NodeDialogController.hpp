@@ -4,6 +4,7 @@
 #include "NodeDialog.hpp"
 #include "BrowserConnection.hpp"
 #include "IScriptBuilderEventHandler.hpp"
+#include "Interpreter.hpp"
 
 namespace Controller {
 
@@ -22,6 +23,7 @@ private:
 private:
 	UI::NodeDialog dialog;
 	BrowserConnection browserConnection;
+	Model::Interpreter interpreter;
 };
 
 }

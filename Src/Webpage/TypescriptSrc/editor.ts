@@ -13,7 +13,7 @@ import { CustomDropDown } from "./dropdownControlUI";
 import { CatchNewElementInfo, ACConnection, ScriptBuilder } from "./ACObjectTypes";
 import { ControlFlowEngine, DataflowEngine } from "rete-engine";
 import { getConnectionSockets } from "./sockets";
-import { CatchNewElementNode } from "./nodes/catchNewElementNode";
+import { GetSelectionNode } from "./nodes/getSelectionNode";
 import { GetSlabNode } from "./nodes/getSlabNode";
 import { LayoutGenerator } from "./nodes/layoutGenerator";
 import { addSideMenu } from "./sideMenu";
@@ -113,8 +113,7 @@ async function createEditor(container: HTMLElement) {
   area.use(dock);
 
   await loadACObjects();
-  const elementTypes: string = await catchNewElementInfo.getElementTypes();
-  dock.add (() => new CatchNewElementNode(elementTypes));
+  dock.add (() => new GetSelectionNode());
   dock.add (() => new GetSlabNode(editorController.dataFlowEngine));
   dock.add (() => new LayoutGenerator(editorController.dataFlowEngine));
 
