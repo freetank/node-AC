@@ -43,12 +43,11 @@ export class GetSlabNode extends ClassicPreset.Node {
     console.log("Inputs: ", inputs);
 
     let slabParams = await scriptBuilder.getSlab(inputs.elemGuid[0]);
+    console.log("Slab params: ", slabParams);
 
     this.level = slabParams.level;
     this.thickness = slabParams.thickness;
-    for (const point of slabParams.polygon) {
-      this.polygon.push([point.x, point.y]);
-    }
+    this.polygon = slabParams.polygon;
 
     forward("level");
     forward("thickness");

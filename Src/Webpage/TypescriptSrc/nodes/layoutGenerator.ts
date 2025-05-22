@@ -3,7 +3,7 @@ import { PolygonSocket, PositionSocket, PolygonListSocket, PositionListSocket, S
 import { DataflowEngine } from "rete-engine";
 import { Schemes } from "./nodeTypes";
 import { ScriptBuilder } from "../ACObjectTypes";
-import { Coordinate, Polygon } from "../commonTypes";
+import { Polygon } from "../commonTypes";
 
 declare var scriptBuilder: ScriptBuilder
 
@@ -13,6 +13,9 @@ export class LayoutGenerator extends ClassicPreset.Node {
 
   private userPromptInitial: string = "Extra input";
 
+  private zoneNames: string[] = [];
+  private zonePolygons: Polygon[] = [];
+
 
   constructor(private dataflow: DataflowEngine<Schemes>) {
     super("Layout generator");
@@ -21,7 +24,6 @@ export class LayoutGenerator extends ClassicPreset.Node {
     this.userPromptControl = new ClassicPreset.InputControl('text', { readonly: false, initial: this.userPromptInitial });
     this.addInput("slabPoly", new ClassicPreset.Input(new PolygonSocket (), "Slab Polygon"));
 
-    this.addOutput("zonePositions", new ClassicPreset.Output(new PositionListSocket (), "Zone Position"));
     this.addOutput("zonePolygons", new ClassicPreset.Output(new PolygonListSocket (), "Zone Polygons"));
     this.addOutput("zoneNames", new ClassicPreset.Output(new StringListSocket (), "Zone names"));
     
@@ -31,11 +33,10 @@ export class LayoutGenerator extends ClassicPreset.Node {
     return this;
   }
 
-  data(_: {slabPoly: Polygon}): {zonePositions: Coordinate[], zonePolygons: Polygon[], zoneNames: string[]} {
+  data(_: {slabPoly: Polygon}): {zoneNames: string[], zonePolygons: Polygon[]} {
     return {
-      zonePositions: [[0, 0], [1, 1], [2, 2]],
-      zonePolygons: [[[0, 0], [1, 1], [2, 2]], [[3, 3], [4, 4], [5, 5]], [[3, 3], [4, 4], [5, 5]]],
-      zoneNames: ["Zone 1", "Zone 2", "Zone 3"]
+      zoneNames: this.zoneNames,
+      zonePolygons: this.zonePolygons
     };
   }
 
@@ -43,43 +44,15 @@ export class LayoutGenerator extends ClassicPreset.Node {
     console.log("LayoutGenerator execute");
     
     const inputs = await this.dataflow.fetchInputs(this.id);
-    // fetch("http://localhost:9500/generate-layout", {
-    //     method: "POST",
-    //     headers: {
-    //         "Content-Type": "application/json"
-    //     },
-    //     body: JSON.stringify({
-    //         // your data here, for example:
-    //         slabPoly: inputs.slabPoly,
-    //         namePrefix: this.zonePrefixControl.value ? this.zonePrefixControl.value : "",
-    //         userPrompt: this.userPromptControl.value && this.userPromptControl.value !== this.userPromptInitial ? this.userPromptControl.value : ""
-    //     })
-    // })
-    // .then(response => response.json())
-    // .then(data => {
-    //     console.log("Success:", data);
-    //     forward("zoneNames");
-
-    //     console.log(scriptBuilder.getElements("Wall"));
-    //     // TODO: Check if more input comes from the same node
-    //     // forward("zonePositions");
-    //     // forward("zonePolygons");
-
-    //     scriptBuilder.scriptCreationDone(); // TODO PaM: remove this
-    // })
-    // .catch(error => {
-    //     console.error("Error:", error);
-    // });
     
     console.log("Inputs: ", inputs);
-
-    if (inputs.slabPoly !== null && inputs.slabPoly.length === 0) {
+    if (inputs.slabPoly[0] === undefined) {
       console.error("No slab polygon provided");
       return;
     }
 
     const aiPrompt = "name prefix: " + (this.zonePrefixControl.value ? this.zonePrefixControl.value : "") +
-                    ", polygon: " + JSON.stringify(inputs.slabPoly) +
+                    ", polygon: " + JSON.stringify(inputs.slabPoly[0]) +
                     ", extra input: " + (this.userPromptControl.value && this.userPromptControl.value !== this.userPromptInitial ? this.userPromptControl.value : "");
 
     console.log("AI prompt: ", aiPrompt);
@@ -103,7 +76,15 @@ export class LayoutGenerator extends ClassicPreset.Node {
 
         let resultZones = JSON.parse(data.choices[0].message.content);
         
-        console.log("Result zones: ", resultZones);
+        this.zoneNames = [];
+        this.zonePolygons = [];
+        for (const zone of resultZones) {
+            this.zoneNames.push(zone.name);
+            this.zonePolygons.push(zone.polygon);
+        }
+
+        console.log("Zone names: ", this.zoneNames);
+        console.log("Zone polygons: ", this.zonePolygons);
         
         forward("zoneNames");
 
@@ -116,5 +97,32 @@ export class LayoutGenerator extends ClassicPreset.Node {
     .catch(error => {
         console.error("Error:", error);
     });
+
+    // fetch("http://localhost:9500/generate-layout", {
+    //     method: "POST",
+    //     headers: {
+    //         "Content-Type": "application/json"
+    //     },
+    //     body: JSON.stringify({
+    //         // your data here, for example:
+    //         slabPoly: inputs.slabPoly[0],
+    //         namePrefix: this.zonePrefixControl.value ? this.zonePrefixControl.value : "",
+    //         userPrompt: this.userPromptControl.value && this.userPromptControl.value !== this.userPromptInitial ? this.userPromptControl.value : ""
+    //     })
+    // })
+    // .then(response => response.json())
+    // .then(data => {
+    //     console.log("Success:", data);
+    //     forward("zoneNames");
+
+    //     // TODO: Check if more input comes from the same node
+    //     // forward("zonePositions");
+    //     // forward("zonePolygons");
+
+    //     scriptBuilder.scriptCreationDone(); // TODO PaM: remove this
+    // })
+    // .catch(error => {
+    //     console.error("Error:", error);
+    // });
   }
 }
