@@ -1,11 +1,11 @@
 import { GetSchemes, ClassicPreset } from "rete";
 import { ReactArea2D } from "rete-react-plugin";
 import { GetSlabNode } from "./getSlabNode";
-import { CatchNewElementNode } from "./catchNewElementNode";
+import { GetSelectionNode } from "./getSelectionNode";
 import { LayoutGenerator } from "./layoutGenerator";
 
 export type Node =
-  | CatchNewElementNode
+  | GetSelectionNode
   | GetSlabNode
   | LayoutGenerator;
 
@@ -14,7 +14,7 @@ export class ConnectionBase<
   B extends Node
 > extends ClassicPreset.Connection<A, B> {}
 type Connection = 
-  | ConnectionBase<CatchNewElementNode, GetSlabNode>
+  | ConnectionBase<GetSelectionNode, GetSlabNode>
   | ConnectionBase<GetSlabNode, LayoutGenerator>;
 
 export type Schemes = GetSchemes<Node, Connection>;

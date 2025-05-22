@@ -1,6 +1,7 @@
 #include "ScriptBuilder.hpp"
 #include "IScriptBuilderEventHandler.hpp"
 #include "ACAPinc.h"
+#include "GSGuid.hpp"
 
 namespace Controller {
 
@@ -9,7 +10,7 @@ ScriptBuilder::ScriptBuilder () :
 	isCallbackCreationInProgress (false)
 {
 	ResetScript ();
-	AddItem (new JS::Function ("catchNewElement", std::bind(&ScriptBuilder::CatchNewElement, this, std::placeholders::_1)));
+	AddItem (new JS::Function ("getSelection", std::bind(&ScriptBuilder::GetSelection, this, std::placeholders::_1)));
 	AddItem (new JS::Function ("getElements", std::bind(&ScriptBuilder::GetElements, this, std::placeholders::_1)));
 	AddItem (new JS::Function ("getElement", std::bind(&ScriptBuilder::GetElement, this, std::placeholders::_1)));
 	AddItem (new JS::Function ("generateLayout", std::bind(&ScriptBuilder::GenerateLayout, this, std::placeholders::_1)));
@@ -33,24 +34,18 @@ void ScriptBuilder::ResetScript ()
 	script = u"{\n"sv;
 }
 
-GS::Ref<JS::Base> ScriptBuilder::CatchNewElement (GS::Ref<JS::Base> params)
+GS::Ref<JS::Base> ScriptBuilder::GetSelection (GS::Ref<JS::Base> /* params */)
 {
-	const GS::Array<GS::Ref<JS::Base>> array = GS::DynamicCast<JS::Array> (params)->GetItemArray ();
-	const Int32 elementID = GS::DynamicCast<JS::Value> (array[0])->GetInteger ();
-	const GS::UniString guid = GS::DynamicCast<JS::Value> (array[1])->GetString ();
+	API_SelectionInfo	selectionInfo;
+	GS::Array<API_Neig>	selNeigs;
 
-	isCallbackCreationInProgress = true;
+	ACAPI_Selection_Get (&selectionInfo, &selNeigs, false);
+	if (selNeigs.IsEmpty ()) {
+		return new JS::Value (u"00000000-0000-0000-0000-000000000000"sv);
+	};
 
-	script += GS::UniString::Printf (
-		u"\"ACAPI_Element_CatchNewElement\": {\n\
-			\"elementID\": %d,\n\
-			\"guid\": \"%T\",\n\
-			\"callback\": {\n"sv,
-		elementID,
-		guid.ToPrintf ()
-	);
-
-	return new JS::Base ();
+	GS::Guid guid = APIGuid2GSGuid (selNeigs[0].guid);
+	return new JS::Value (guid.ToUniString ());
 }
 
 GS::Ref<JS::Base> ScriptBuilder::GetElement (GS::Ref<JS::Base> params)
