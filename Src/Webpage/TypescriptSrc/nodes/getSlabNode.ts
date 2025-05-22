@@ -25,7 +25,7 @@ export class GetSlabNode extends ClassicPreset.Node {
       level: 3,
       thickness: 11.4,
       position: [0, 0],
-      polygon: [[0, 0], [1, 1], [2, 2]]
+      polygon: [[0, 0], [0, 22], [15, 22], [15, 0], [0, 0]]
     };
   }
 
