@@ -12,7 +12,7 @@ ScriptBuilder::ScriptBuilder () :
 	ResetScript ();
 	AddItem (new JS::Function ("getSelection", std::bind(&ScriptBuilder::GetSelection, this, std::placeholders::_1)));
 	AddItem (new JS::Function ("getElements", std::bind(&ScriptBuilder::GetElements, this, std::placeholders::_1)));
-	AddItem (new JS::Function ("getElement", std::bind(&ScriptBuilder::GetElement, this, std::placeholders::_1)));
+	AddItem (new JS::Function ("getSlab", std::bind(&ScriptBuilder::GetSlab, this, std::placeholders::_1)));
 	AddItem (new JS::Function ("generateLayout", std::bind(&ScriptBuilder::GenerateLayout, this, std::placeholders::_1)));
 	AddItem (new JS::Function ("scriptCreationDone", std::bind(&ScriptBuilder::ScriptCreationDone, this, std::placeholders::_1)));
 }
@@ -48,19 +48,46 @@ GS::Ref<JS::Base> ScriptBuilder::GetSelection (GS::Ref<JS::Base> /* params */)
 	return new JS::Value (guid.ToUniString ());
 }
 
-GS::Ref<JS::Base> ScriptBuilder::GetElement (GS::Ref<JS::Base> params)
+namespace {
+
+JS::Array* FromPolygon (const API_Polygon& polygon, API_Coord** coords)
+{
+	JS::Array* jsArray = new JS::Array ();
+	for (Int32 i = 1; i <= polygon.nCoords; ++i) {
+		JS::Object* jsCoord = new JS::Object ();
+		API_Coord coord = (*coords)[i];
+		jsCoord->AddItem (u"x"sv, new JS::Value(coord.x));
+		jsCoord->AddItem (u"y"sv, new JS::Value(coord.y));
+		jsArray->AddItem (jsCoord);
+	}
+
+	return jsArray;
+}
+
+}
+
+GS::Ref<JS::Base> ScriptBuilder::GetSlab (GS::Ref<JS::Base> params)
 {
 	const GS::UniString guid = GS::DynamicCast<JS::Value> (params)->GetString ();
 
-	GS::Array<API_Guid> guids;
-	script += GS::UniString::Printf (
-		u"\"ACAPI_Element_Get\": {\n\
-			\"guid\": \"%T\"\n\
-		}\n,"sv,
-		guid.ToPrintf ()
-	);
+	API_Element element = {};
+	element.header.guid = GSGuid2APIGuid (GS::Guid (guid));
+	ACAPI_Element_Get (&element);
 
-	return new JS::Base ();
+	if (element.header.type.typeID != API_SlabID) {
+		return new JS::Base ();
+	}
+
+	JS::Object* jsElement = new JS::Object ();
+	jsElement->AddItem (u"level"sv, new JS::Value(element.slab.level));
+	jsElement->AddItem (u"thickness"sv, new JS::Value(element.slab.thickness));
+
+	API_ElementMemo memo = {};
+	ACAPI_Element_GetMemo (element.header.guid, &memo);
+
+	jsElement->AddItem (u"polygon"sv, FromPolygon (element.slab.poly, memo.coords));
+
+	return jsElement;
 }
 
 GS::Ref<JS::Base> ScriptBuilder::GetElements (GS::Ref<JS::Base> params)

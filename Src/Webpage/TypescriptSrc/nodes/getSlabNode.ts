@@ -8,8 +8,16 @@ import { Coordinate, Polygon } from "../commonTypes";
 declare var scriptBuilder: ScriptBuilder
 
 export class GetSlabNode extends ClassicPreset.Node {
+  private level: number;
+  private thickness: number;
+  private polygon: Polygon;
+
   constructor(private dataflow: DataflowEngine<Schemes>) {
     super("Get slab");
+
+    this.level = 0;
+    this.thickness = 0;
+    this.polygon = [];
 
     this.addInput("elemGuid", new ClassicPreset.Input(new GuidSocket (), "GUID"));
 
@@ -20,12 +28,11 @@ export class GetSlabNode extends ClassicPreset.Node {
     return this;
   }
 
-  data(_: {elemGuid: string}): {level: number, thickness: number, position: Coordinate, polygon: Polygon} {
+  data(_: {elemGuid: string}): {level: number, thickness: number, polygon: Polygon} {
     return {
-      level: 3,
-      thickness: 11.4,
-      position: [0, 0],
-      polygon: [[0, 0], [1, 1], [2, 2]]
+      level: this.level,
+      thickness: this.thickness,
+      polygon: this.polygon
     };
   }
 
@@ -35,7 +42,13 @@ export class GetSlabNode extends ClassicPreset.Node {
     const inputs = await this.dataflow.fetchInputs(this.id);
     console.log("Inputs: ", inputs);
 
-    scriptBuilder.getElement(inputs.elemGuid[0]);
+    let slabParams = await scriptBuilder.getSlab(inputs.elemGuid[0]);
+
+    this.level = slabParams.level;
+    this.thickness = slabParams.thickness;
+    for (const point of slabParams.polygon) {
+      this.polygon.push([point.x, point.y]);
+    }
 
     forward("level");
     forward("thickness");
