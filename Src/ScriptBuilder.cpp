@@ -14,6 +14,7 @@ ScriptBuilder::ScriptBuilder () :
 	AddItem (new JS::Function ("getElements", std::bind(&ScriptBuilder::GetElements, this, std::placeholders::_1)));
 	AddItem (new JS::Function ("getSlab", std::bind(&ScriptBuilder::GetSlab, this, std::placeholders::_1)));
 	AddItem (new JS::Function ("generateLayout", std::bind(&ScriptBuilder::GenerateLayout, this, std::placeholders::_1)));
+	AddItem (new JS::Function ("createZone", std::bind(&ScriptBuilder::CreateZone, this, std::placeholders::_1)));
 	AddItem (new JS::Function ("scriptCreationDone", std::bind(&ScriptBuilder::ScriptCreationDone, this, std::placeholders::_1)));
 }
 
@@ -118,6 +119,84 @@ GS::Ref<JS::Base> ScriptBuilder::GetElements (GS::Ref<JS::Base> params)
 
 	return jsGuids;
 }
+
+#pragma optimize( "", off )
+
+GS::Ref<JS::Base> ScriptBuilder::CreateZone (GS::Ref<JS::Base> params)
+{
+	auto array = GS::DynamicCast<JS::Array> (params)->GetItemArray ();
+	auto polygon = GS::DynamicCast<JS::Array> (array[0])->GetItemArray ();
+
+	API_Element element = {};
+	element.header.type = API_ElemType (API_ZoneID);
+	API_ElementMemo memo = {};
+	ACAPI_Element_GetDefaults (&element, &memo);
+
+	GS::Array<API_Coord> coords;
+	for (USize i = 0; i < polygon.GetSize (); ++i) {
+		auto coord = GS::DynamicCast<JS::Object> (polygon[i]);
+		API_Coord apiCoord;
+		auto& itemTable = coord->GetItemTable ();
+		if (itemTable.ContainsKey (u"x"sv)) {
+			apiCoord.x = GS::DynamicCast<JS::Value> (itemTable[u"x"sv])->GetDouble ();
+		}
+		if (itemTable.ContainsKey (u"y"sv)) {
+			apiCoord.y = GS::DynamicCast<JS::Value> (itemTable[u"y"sv])->GetDouble ();
+		}
+		coords.Push (apiCoord);
+		ACAPI_WriteReport (GS::UniString::Printf (u"Coord: %f, %f"sv, apiCoord.x, apiCoord.y), false);
+	}
+
+	constexpr double EPS = 0.00001;
+	bool isClosedPoly = std::abs(coords[0].x - coords[polygon.GetSize () - 1].x) < EPS &&
+						std::abs(coords[0].y - coords[coords.GetSize () - 1].y) < EPS;
+
+	ACAPI_WriteReport (GS::UniString::Printf (u"Closed polygon: %d"sv, isClosedPoly), false);
+	element.zone.manual = true;
+	element.zone.poly.nCoords = polygon.GetSize () + (isClosedPoly ? 0 : 1);
+	element.zone.poly.nSubPolys = 1;
+
+	memo.coords	= reinterpret_cast<API_Coord**>		(BMAllocateHandle ((element.zone.poly.nCoords + 1) * sizeof (API_Coord), ALLOCATE_CLEAR, 0));
+	memo.pends	= reinterpret_cast<Int32**>			(BMAllocateHandle ((element.zone.poly.nSubPolys + 1) * sizeof (Int32), ALLOCATE_CLEAR, 0));
+
+	for (USize i = 0; i < coords.GetSize (); ++i) {
+		(*memo.coords)[i+1].x = coords[i].x;
+		(*memo.coords)[i+1].y = coords[i].y;
+		ACAPI_WriteReport (GS::UniString::Printf (u"Coord[%d]: %f, %f"sv, i+1, (*memo.coords)[i+1].x, (*memo.coords)[i+1].y), false);
+	}
+
+	if (!isClosedPoly) {
+		(*memo.coords)[element.zone.poly.nCoords] = (*memo.coords)[1];
+		ACAPI_WriteReport (GS::UniString::Printf (u"Coord[%d]: %f, %f"sv, element.zone.poly.nCoords, (*memo.coords)[element.zone.poly.nCoords].x, (*memo.coords)[element.zone.poly.nCoords].y), false);
+	}
+	(*memo.pends)[1] = element.zone.poly.nCoords;
+
+	const GS::UniString zoneName = GS::DynamicCast<JS::Value> (array[1])->GetString ();
+	ACAPI_WriteReport (GS::UniString::Printf (u"Zone name: %T"sv, zoneName.ToPrintf ()), false);
+	GS::snuprintf (element.zone.roomName, sizeof (element.zone.roomName), zoneName.ToCStr ().Get ());
+
+	API_Element label = {};
+	label.header.type = API_ElemType (API_LabelID);
+	API_ElementMemo labelMemo = {};
+	ACAPI_Element_GetDefaults (&label, &labelMemo);
+	label.label.createAtDefaultPosition = true;
+
+	ACAPI_CallUndoableCommand ("",
+		[&] () {
+			GSErrCode err = ACAPI_Element_Create (&element, &memo);
+			if (err != NoError) {
+				return err;
+			}
+			label.label.parent = element.header.guid;
+			label.label.parentType = element.header.type;
+			err = ACAPI_Element_Create (&label, &labelMemo);
+			return err;
+		}
+	);
+
+	return new JS::Base ();
+}
+#pragma optimize( "", on )
 
 GS::Ref<JS::Base> ScriptBuilder::GenerateLayout (GS::Ref<JS::Base> params)
 {

@@ -13,5 +13,6 @@ export declare interface ScriptBuilder {
   getElements (elementID: string): any;
   getSlab (guid: string): any;
   generateLayout (description: string, slabPoly: Polygon): void;
+  createZone (zonePoly: Polygon, zoneName: string): void;
   scriptCreationDone (): void;
 }

@@ -37,7 +37,7 @@ export class PolygonSocket extends ClassicPreset.Socket {
   }
 
   isCompatibleWith(socket: ClassicPreset.Socket) {
-    return socket instanceof PolygonSocket;
+    return socket instanceof PolygonSocket || socket instanceof PolygonListSocket;
   }
 }
 
@@ -47,7 +47,7 @@ export class StringSocket extends ClassicPreset.Socket {
   }
 
   isCompatibleWith(socket: ClassicPreset.Socket) {
-    return socket instanceof StringSocket;
+    return socket instanceof StringSocket || socket instanceof StringListSocket;
   }
 }
 
@@ -57,7 +57,7 @@ export class PolygonListSocket extends ClassicPreset.Socket {
   }
 
   isCompatibleWith(socket: ClassicPreset.Socket) {
-    return socket instanceof PolygonListSocket;
+    return socket instanceof PolygonListSocket || socket instanceof PolygonSocket;
   }
 }
 
@@ -77,7 +77,7 @@ export class StringListSocket extends ClassicPreset.Socket {
   }
 
   isCompatibleWith(socket: ClassicPreset.Socket) {
-    return socket instanceof StringListSocket;
+    return socket instanceof StringListSocket || socket instanceof StringSocket;
   }
 }
 

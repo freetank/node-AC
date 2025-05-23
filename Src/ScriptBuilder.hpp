@@ -26,6 +26,7 @@ private:
 	GS::Ref<JS::Base> ScriptCreationDone (GS::Ref<JS::Base> params);
 	GS::Ref<JS::Base> GetSlab (GS::Ref<JS::Base> params);
 	GS::Ref<JS::Base> GetElements (GS::Ref<JS::Base> params);
+	GS::Ref<JS::Base> CreateZone (GS::Ref<JS::Base> params);
 	GS::Ref<JS::Base> GenerateLayout (GS::Ref<JS::Base> params);
 
 	void ResetScript ();

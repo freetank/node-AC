@@ -19,6 +19,7 @@ import { LayoutGenerator } from "./nodes/layoutGenerator";
 import { addSideMenu } from "./sideMenu";
 import { StartNode } from "./nodes/startNode";
 import { DockPreset } from "./nodes/dockPreset";
+import { CreateZonesNode } from "./nodes/createZonesNode";
 
 declare var DG: any;
 declare var catchNewElementInfo: CatchNewElementInfo;
@@ -116,6 +117,7 @@ async function createEditor(container: HTMLElement) {
   dock.add (() => new GetSelectionNode());
   dock.add (() => new GetSlabNode(editorController.dataFlowEngine));
   dock.add (() => new LayoutGenerator(editorController.dataFlowEngine));
+  dock.add (() => new CreateZonesNode(editorController.dataFlowEngine));
 
   AreaExtensions.simpleNodesOrder(area);
 
