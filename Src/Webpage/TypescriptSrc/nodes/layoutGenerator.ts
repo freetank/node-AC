@@ -22,7 +22,7 @@ export class LayoutGenerator extends ClassicPreset.Node {
 
     this.zonePrefixControl = new ClassicPreset.InputControl('text', { readonly: false, initial: 'Zone ' });
     this.userPromptControl = new ClassicPreset.InputControl('text', { readonly: false, initial: this.userPromptInitial });
-    this.addInput("slabPoly", new ClassicPreset.Input(new PolygonSocket (), "Slab Polygon"));
+    this.addInput("slabPoly", new ClassicPreset.Input(new PolygonSocket (), "Polygon"));
 
     this.addOutput("zonePolygons", new ClassicPreset.Output(new PolygonListSocket (), "Zone Polygons"));
     this.addOutput("zoneNames", new ClassicPreset.Output(new StringListSocket (), "Zone names"));

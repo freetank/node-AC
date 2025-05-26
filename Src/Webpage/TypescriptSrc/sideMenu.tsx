@@ -13,7 +13,7 @@ export function addSideMenu (container: HTMLElement, handleClick: (() => void)) 
       className="side-menu"
     >
       <div id="dock-container"></div>
-      <Button onClick={handleClick} className="fixed-bottom">Ez egy gomb</Button>
+      <Button onClick={handleClick} className="fixed-bottom">Run</Button>
     </Sider>
     <Layout>
       <Content>

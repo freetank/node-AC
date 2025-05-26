@@ -137,11 +137,20 @@ GS::Ref<JS::Base> ScriptBuilder::CreateZone (GS::Ref<JS::Base> params)
 		auto coord = GS::DynamicCast<JS::Object> (polygon[i]);
 		API_Coord apiCoord;
 		auto& itemTable = coord->GetItemTable ();
+		// ACAPI_WriteReport (GS::UniString::Printf (u"Coord[%d]: %T"sv, i, coord->GetName ().ToPrintf ()), false);
 		if (itemTable.ContainsKey (u"x"sv)) {
-			apiCoord.x = GS::DynamicCast<JS::Value> (itemTable[u"x"sv])->GetDouble ();
+			if (GS::DynamicCast<JS::Value> (itemTable[u"x"sv])->GetType () == JS::Value::ValueType::DOUBLE) {
+				apiCoord.x = GS::DynamicCast<JS::Value> (itemTable[u"x"sv])->GetDouble ();
+			} else {
+				apiCoord.x = GS::DynamicCast<JS::Value> (itemTable[u"x"sv])->GetInteger ();
+			}
 		}
 		if (itemTable.ContainsKey (u"y"sv)) {
-			apiCoord.y = GS::DynamicCast<JS::Value> (itemTable[u"y"sv])->GetDouble ();
+			if (GS::DynamicCast<JS::Value> (itemTable[u"y"sv])->GetType () == JS::Value::ValueType::DOUBLE) {
+				apiCoord.y = GS::DynamicCast<JS::Value> (itemTable[u"y"sv])->GetDouble ();
+			} else {
+				apiCoord.y = GS::DynamicCast<JS::Value> (itemTable[u"y"sv])->GetInteger ();
+			}
 		}
 		coords.Push (apiCoord);
 		ACAPI_WriteReport (GS::UniString::Printf (u"Coord: %f, %f"sv, apiCoord.x, apiCoord.y), false);
